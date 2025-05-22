@@ -1,7 +1,7 @@
 import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
 
-import Navigation from './components/Navigation';
 import Footer from './components/Footer';
+import Navigation from './components/Navigation';
 import FlowBuilder from './pages/FlowBuilder';
 import Home from './pages/Home';
 import Pricing from './pages/Pricing';

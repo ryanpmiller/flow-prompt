@@ -1,5 +1,6 @@
-import { SparklesIcon, BriefcaseIcon, UserGroupIcon } from '@heroicons/react/24/solid';
 import { Link } from 'react-router-dom';
+
+import { BriefcaseIcon, SparklesIcon, UserGroupIcon } from '@heroicons/react/24/solid';
 
 const featuredTemplates = [
 	{
@@ -33,17 +34,17 @@ const personas = [
 	{
 		title: 'For Creators',
 		description: 'Get viral content ideas instantly',
-		icon: <SparklesIcon className='size-14' />,
+		icon: <SparklesIcon className="size-14" />,
 	},
 	{
 		title: 'For Freelancers',
 		description: 'Send perfect client pitches',
-		icon: <BriefcaseIcon className='size-14' />,
+		icon: <BriefcaseIcon className="size-14" />,
 	},
 	{
 		title: 'For Job Seekers',
 		description: 'Get hired faster with tailored content',
-		icon: <UserGroupIcon className='size-14' />,
+		icon: <UserGroupIcon className="size-14" />,
 	},
 ];
 

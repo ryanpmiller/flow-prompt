@@ -33,12 +33,15 @@ export interface PromptNode extends Node {
 interface FlowState {
 	nodes: PromptNode[];
 	edges: Edge[];
+	selectedNodes: string[];
+	globalSettings: NodeSettings;
 	onNodesChange: OnNodesChange;
 	onEdgesChange: OnEdgesChange;
 	onConnect: OnConnect;
+	onSelectionChange: (nodeIds: string[]) => void;
 	addNode: (node: Partial<PromptNode>) => void;
 	updateNodeContent: (nodeId: string, content: string) => void;
-	updateNodeSettings: (nodeId: string, settings: NodeSettings) => void;
+	updateGlobalSettings: (settings: NodeSettings) => void;
 	deleteNode: (nodeId: string) => void;
 	resetFlow: () => void;
 }
@@ -48,20 +51,42 @@ const loadSavedFlow = () => {
 	try {
 		const savedFlow = localStorage.getItem('savedFlow');
 		if (savedFlow) {
-			const { nodes, edges } = JSON.parse(savedFlow);
-			return { nodes, edges };
+			const { nodes, edges, globalSettings } = JSON.parse(savedFlow);
+			return {
+				nodes,
+				edges,
+				globalSettings: globalSettings ?? {
+					temperature: 0.7,
+					model: DEFAULT_MODEL,
+					tone: 'Professional',
+				},
+			};
 		}
 	} catch (error) {
 		console.error('Error loading saved flow:', error);
 	}
-	return { nodes: [], edges: [] };
+	return {
+		nodes: [],
+		edges: [],
+		globalSettings: {
+			temperature: 0.7,
+			model: DEFAULT_MODEL,
+			tone: 'Professional',
+		},
+	};
 };
 
-const { nodes: savedNodes, edges: savedEdges } = loadSavedFlow();
+const {
+	nodes: savedNodes,
+	edges: savedEdges,
+	globalSettings: savedGlobalSettings,
+} = loadSavedFlow();
 
 export const useFlowStore = create<FlowState>((set, get) => ({
 	nodes: savedNodes,
 	edges: savedEdges,
+	selectedNodes: [],
+	globalSettings: savedGlobalSettings,
 	onNodesChange: (changes: NodeChange[]) => {
 		set({
 			nodes: applyNodeChanges(changes, get().nodes as Node[]) as PromptNode[],
@@ -85,11 +110,11 @@ export const useFlowStore = create<FlowState>((set, get) => ({
 			data: {
 				type: 'transform',
 				content: '',
-				settings: {
-					temperature: 0.7,
-					model: DEFAULT_MODEL,
-				},
 				...node.data,
+				settings: {
+					...get().globalSettings,
+					...node.data?.settings,
+				},
 			},
 			...node,
 		};
@@ -101,23 +126,47 @@ export const useFlowStore = create<FlowState>((set, get) => ({
 				node.id === nodeId ? { ...node, data: { ...node.data, content } } : node
 			),
 		});
+
+		// Save to localStorage
+		const flow = {
+			nodes: get().nodes,
+			edges: get().edges,
+			globalSettings: get().globalSettings,
+			updatedAt: new Date().toISOString(),
+		};
+		localStorage.setItem('savedFlow', JSON.stringify(flow));
 	},
-	updateNodeSettings: (nodeId: string, settings: NodeSettings) => {
+	updateGlobalSettings: (settings: NodeSettings) => {
+		set({ globalSettings: settings });
 		set({
-			nodes: get().nodes.map((node) =>
-				node.id === nodeId ? { ...node, data: { ...node.data, settings } } : node
-			),
+			nodes: get().nodes.map((node) => ({
+				...node,
+				data: {
+					...node.data,
+					settings,
+				},
+			})),
 		});
+
+		// Save to localStorage
+		const flow = {
+			nodes: get().nodes,
+			edges: get().edges,
+			globalSettings: settings,
+			updatedAt: new Date().toISOString(),
+		};
+		localStorage.setItem('savedFlow', JSON.stringify(flow));
 	},
 	deleteNode: (nodeId: string) => {
 		set({
 			nodes: get().nodes.filter((node) => node.id !== nodeId),
-			edges: get().edges.filter(
-				(edge) => edge.source !== nodeId && edge.target !== nodeId
-			),
+			edges: get().edges.filter((edge) => edge.source !== nodeId && edge.target !== nodeId),
 		});
 	},
 	resetFlow: () => {
 		set({ nodes: [], edges: [] });
+	},
+	onSelectionChange: (nodeIds: string[]) => {
+		set({ selectedNodes: nodeIds });
 	},
 }));

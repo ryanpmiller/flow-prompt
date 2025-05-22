@@ -4,7 +4,8 @@ import { Dialog, DialogPanel, DialogTitle, Transition, TransitionChild } from '@
 import { XMarkIcon } from '@heroicons/react/24/outline';
 
 import { DEFAULT_MODEL, MODEL_CONFIGS, SupportedModel } from '../config/models';
-import { NodeSettings as NodeSettingsType, PromptNode } from '../store/flowStore';
+import { useFlowStore } from '../store/flowStore';
+import { NodeSettings as NodeSettingsType } from '../store/flowStore';
 
 interface RequiredNodeSettings extends Omit<NodeSettingsType, 'model'> {
 	model: SupportedModel;
@@ -13,10 +14,8 @@ interface RequiredNodeSettings extends Omit<NodeSettingsType, 'model'> {
 }
 
 interface NodeSettingsProps {
-	node: PromptNode;
 	isOpen: boolean;
 	onClose: () => void;
-	onUpdate: (nodeId: string, settings: RequiredNodeSettings) => void;
 }
 
 const TONE_OPTIONS = [
@@ -30,7 +29,9 @@ const TONE_OPTIONS = [
 	'Persuasive',
 ];
 
-export default function NodeSettings({ node, isOpen, onClose, onUpdate }: NodeSettingsProps) {
+export default function NodeSettings({ isOpen, onClose }: NodeSettingsProps) {
+	const { globalSettings, updateGlobalSettings } = useFlowStore();
+
 	const [settings, setSettings] = useState<RequiredNodeSettings>({
 		temperature: 0.7,
 		model: DEFAULT_MODEL,
@@ -38,15 +39,13 @@ export default function NodeSettings({ node, isOpen, onClose, onUpdate }: NodeSe
 	});
 
 	useEffect(() => {
-		if (node.data.settings) {
-			// Ensure we have all required fields with defaults if needed
-			setSettings({
-				temperature: node.data.settings.temperature ?? 0.7,
-				model: node.data.settings.model ?? DEFAULT_MODEL,
-				tone: node.data.settings.tone ?? 'Professional',
-			});
-		}
-	}, [node.data.settings]);
+		// Initialize from global settings
+		setSettings({
+			temperature: globalSettings.temperature ?? 0.7,
+			model: globalSettings.model ?? DEFAULT_MODEL,
+			tone: globalSettings.tone ?? 'Professional',
+		});
+	}, [globalSettings]);
 
 	const handleModelChange = (model: SupportedModel) => {
 		setSettings((prev) => ({
@@ -56,7 +55,7 @@ export default function NodeSettings({ node, isOpen, onClose, onUpdate }: NodeSe
 	};
 
 	const handleSubmit = () => {
-		onUpdate(node.id, settings);
+		updateGlobalSettings(settings);
 		onClose();
 	};
 
@@ -72,7 +71,10 @@ export default function NodeSettings({ node, isOpen, onClose, onUpdate }: NodeSe
 					leaveFrom="opacity-100"
 					leaveTo="opacity-0"
 				>
-					<div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true" />
+					<div
+						className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"
+						aria-hidden="true"
+					/>
 				</TransitionChild>
 
 				<div className="fixed inset-0 z-10 overflow-y-auto">
@@ -103,8 +105,12 @@ export default function NodeSettings({ node, isOpen, onClose, onUpdate }: NodeSe
 										as="h3"
 										className="text-lg font-semibold leading-6 text-gray-900"
 									>
-										Node Settings
+										Global Prompt Block Settings
 									</DialogTitle>
+									<p className="mt-2 text-sm text-gray-500">
+										These settings will apply to all prompt blocks, including
+										new ones.
+									</p>
 									<div className="mt-6">
 										<div className="space-y-4">
 											<div>

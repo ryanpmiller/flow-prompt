@@ -1,10 +1,22 @@
-import { useCallback } from 'react';
-import ReactFlow, { Background, Controls, NodeTypes, Panel, ReactFlowProvider } from 'reactflow';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
+import ReactFlow, {
+	Background,
+	Controls,
+	Node as FlowNode,
+	NodeTypes,
+	OnSelectionChangeParams,
+	Panel,
+	ReactFlowInstance,
+	ReactFlowProvider,
+} from 'reactflow';
 import 'reactflow/dist/style.css';
 
 import FlowToolbar from '../components/FlowToolbar';
 import PromptNodeComponent from '../components/PromptNode';
+import { DEFAULT_MODEL } from '../config/models';
 import { useFlowStore } from '../store/flowStore';
+import { useTemplateStore } from '../store/templateStore';
 
 const nodeTypes: NodeTypes = {
 	promptNode: PromptNodeComponent,
@@ -92,7 +104,49 @@ const groupedTemplates = PROMPT_TEMPLATES.reduce(
 );
 
 function Flow() {
-	const { nodes, edges, onNodesChange, onEdgesChange, onConnect, addNode } = useFlowStore();
+	const [searchParams] = useSearchParams();
+	const {
+		nodes,
+		edges,
+		onNodesChange,
+		onEdgesChange,
+		onConnect,
+		onSelectionChange,
+		addNode,
+		resetFlow,
+	} = useFlowStore();
+	const { loadTemplate } = useTemplateStore();
+
+	const reactFlowWrapper = useRef<HTMLDivElement>(null);
+	const [reactFlowInstance, setReactFlowInstance] = useState<ReactFlowInstance | null>(null);
+
+	// Load template from URL parameter
+	useEffect(() => {
+		const templateId = searchParams.get('template');
+		if (templateId) {
+			const template = loadTemplate(templateId);
+			if (template) {
+				resetFlow();
+				template.nodes.forEach((node) => {
+					addNode({
+						...node,
+						position: node.position,
+					});
+				});
+			}
+		}
+	}, [searchParams, loadTemplate, addNode, resetFlow]);
+
+	const handleSelectionChange = useCallback(
+		({ nodes: selectedNodes }: OnSelectionChangeParams) => {
+			onSelectionChange(selectedNodes?.map((n: FlowNode) => n.id) || []);
+		},
+		[onSelectionChange]
+	);
+
+	const onInit = useCallback((instance: ReactFlowInstance) => {
+		setReactFlowInstance(instance);
+	}, []);
 
 	const onDragStart = useCallback(
 		(event: React.DragEvent, nodeTemplate: (typeof PROMPT_TEMPLATES)[0]) => {
@@ -106,28 +160,31 @@ function Flow() {
 		(event: React.DragEvent) => {
 			event.preventDefault();
 
-			const reactFlowBounds = (event.target as Element)
-				.closest('.react-flow-wrapper')
-				?.getBoundingClientRect();
-
-			if (!reactFlowBounds) return;
+			const reactFlowBounds = reactFlowWrapper.current?.getBoundingClientRect();
+			if (!reactFlowBounds || !reactFlowInstance) return;
 
 			const template = JSON.parse(event.dataTransfer.getData('application/promptnode'));
 
-			const position = {
+			// Calculate position relative to the viewport
+			const position = reactFlowInstance.project({
 				x: event.clientX - reactFlowBounds.left,
 				y: event.clientY - reactFlowBounds.top,
-			};
+			});
 
 			addNode({
 				position,
 				data: {
 					type: template.type,
 					content: template.template,
+					settings: {
+						temperature: 0.7,
+						model: DEFAULT_MODEL,
+						tone: 'Professional',
+					},
 				},
 			});
 		},
-		[addNode]
+		[addNode, reactFlowInstance]
 	);
 
 	const onDragOver = useCallback((event: React.DragEvent) => {
@@ -170,6 +227,7 @@ function Flow() {
 				{/* Main flow builder area */}
 				<div className="flex-1 bg-white rounded-lg shadow">
 					<div
+						ref={reactFlowWrapper}
 						className="react-flow-wrapper"
 						style={{ width: '100%', height: '100%' }}
 						onDrop={onDrop}
@@ -181,8 +239,11 @@ function Flow() {
 							onNodesChange={onNodesChange}
 							onEdgesChange={onEdgesChange}
 							onConnect={onConnect}
+							onSelectionChange={handleSelectionChange}
+							onInit={onInit}
 							nodeTypes={nodeTypes}
 							fitView
+							selectNodesOnDrag
 						>
 							<Background />
 							<Controls />

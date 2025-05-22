@@ -2,9 +2,11 @@ import { Fragment, useCallback, useState } from 'react';
 
 import { Dialog, DialogPanel, DialogTitle, Transition, TransitionChild } from '@headlessui/react';
 import {
+	AdjustmentsHorizontalIcon,
 	ArrowPathIcon,
 	CheckCircleIcon,
 	ExclamationCircleIcon,
+	FolderIcon,
 	PlayIcon,
 	XMarkIcon,
 } from '@heroicons/react/24/outline';
@@ -12,6 +14,8 @@ import {
 import { useFlowStore } from '../store/flowStore';
 import { NodeResult, executeFlow } from '../utils/executePrompt';
 import { formatTokenCount } from '../utils/tokenCounter';
+import NodeSettings from './NodeSettings';
+import { SaveTemplateDialog } from './SaveTemplateDialog';
 
 interface TokenUsageDisplayProps {
 	usage: {
@@ -56,6 +60,8 @@ export default function FlowToolbar() {
 	const [isLoading, setIsLoading] = useState(false);
 	const [isSaved, setIsSaved] = useState(false);
 	const [isResultsOpen, setIsResultsOpen] = useState(false);
+	const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+	const [isSaveTemplateOpen, setIsSaveTemplateOpen] = useState(false);
 	const [executionResults, setExecutionResults] = useState<Map<string, NodeResult>>(new Map());
 	const [error, setError] = useState<string | null>(null);
 	const [totalUsage, setTotalUsage] = useState<TokenUsageDisplayProps['usage'] | null>(null);
@@ -111,6 +117,23 @@ export default function FlowToolbar() {
 	return (
 		<>
 			<div className="flex gap-2">
+				<button
+					onClick={() => setIsSaveTemplateOpen(true)}
+					className="flex items-center px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition-colors"
+				>
+					<FolderIcon className="w-4 h-4 mr-1.5" />
+					Save as Template
+				</button>
+
+				<button
+					onClick={() => setIsSettingsOpen(true)}
+					className="flex items-center px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition-colors"
+					title="Configure global prompt block settings"
+				>
+					<AdjustmentsHorizontalIcon className="w-4 h-4 mr-1.5" />
+					Block Settings
+				</button>
+
 				<button
 					onClick={handleSave}
 					disabled={isLoading}
@@ -184,7 +207,12 @@ export default function FlowToolbar() {
 											/>
 										</div>
 										<div className="ml-3 w-0 flex-1 pt-0.5">
-											<DialogTitle as="p" className="text-sm font-medium text-gray-900">Error</DialogTitle>
+											<DialogTitle
+												as="p"
+												className="text-sm font-medium text-gray-900"
+											>
+												Error
+											</DialogTitle>
 											<p className="mt-1 text-sm text-gray-500">{error}</p>
 										</div>
 										<div className="ml-4 flex-shrink-0 flex">
@@ -217,7 +245,10 @@ export default function FlowToolbar() {
 						leaveFrom="opacity-100"
 						leaveTo="opacity-0"
 					>
-						<div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true" />
+						<div
+							className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"
+							aria-hidden="true"
+						/>
 					</TransitionChild>
 
 					<div className="fixed inset-0 z-10 overflow-y-auto">
@@ -230,17 +261,20 @@ export default function FlowToolbar() {
 								leave="ease-in duration-200"
 								leaveFrom="opacity-100 translate-y-0 sm:scale-100"
 								leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-							>                                <DialogPanel className="w-full max-w-lg transform overflow-hidden rounded-lg bg-white p-6 text-left align-middle shadow-xl transition-all">
-                                    <DialogTitle as="h3" className="text-lg font-medium leading-6 text-gray-900 mb-4">
-                                        Flow Results
-                                    </DialogTitle>
-
+							>
+								{' '}
+								<DialogPanel className="w-full max-w-lg transform overflow-hidden rounded-lg bg-white p-6 text-left align-middle shadow-xl transition-all">
+									<DialogTitle
+										as="h3"
+										className="text-lg font-medium leading-6 text-gray-900 mb-4"
+									>
+										Flow Results
+									</DialogTitle>
 									<div className="mt-2 max-h-[60vh] overflow-y-auto">
 										{nodes.map((node) => {
 											const result = executionResults.get(node.id);
 											const hasError =
-												result?.error ||
-												result?.text?.startsWith('Error:');
+												result?.error || result?.text?.startsWith('Error:');
 
 											return (
 												<div key={node.id} className="mb-4">
@@ -281,13 +315,9 @@ export default function FlowToolbar() {
 
 										{/* Overall Usage Stats */}
 										{totalUsage && (
-											<TokenUsageDisplay
-												usage={totalUsage}
-												model=""
-											/>
+											<TokenUsageDisplay usage={totalUsage} model="" />
 										)}
 									</div>
-
 									<div className="mt-5 sm:mt-6">
 										<button
 											type="button"
@@ -296,9 +326,80 @@ export default function FlowToolbar() {
 										>
 											Close
 										</button>
-									</div>                                </DialogPanel>
+									</div>{' '}
+								</DialogPanel>
 							</TransitionChild>
 						</div>
+					</div>
+				</Dialog>
+			</Transition>
+
+			{/* Template Save Dialog */}
+			<SaveTemplateDialog
+				isOpen={isSaveTemplateOpen}
+				onClose={() => setIsSaveTemplateOpen(false)}
+			/>
+
+			{/* Settings Modal */}
+			<NodeSettings isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} />
+
+			{/* Error Modal */}
+			<Transition appear show={!!error} as={Fragment}>
+				<Dialog as="div" className="relative z-10" onClose={closeError}>
+					<TransitionChild
+						as={Fragment}
+						enter="ease-out duration-300"
+						enterFrom="opacity-0"
+						enterTo="opacity-100"
+						leave="ease-in duration-200"
+						leaveFrom="opacity-100"
+						leaveTo="opacity-0"
+					>
+						<div className="fixed inset-0 bg-black/25" aria-hidden="true" />
+					</TransitionChild>
+
+					<div className="fixed inset-0 flex items-end px-4 py-6 pointer-events-none sm:p-6 sm:items-start">
+						<TransitionChild
+							as={Fragment}
+							enter="ease-out transform duration-300"
+							enterFrom="opacity-0 translate-y-4"
+							enterTo="opacity-100 translate-y-0"
+							leave="ease-in transform duration-200"
+							leaveFrom="opacity-100 translate-y-0"
+							leaveTo="opacity-0 translate-y-4"
+						>
+							<DialogPanel className="w-full max-w-sm bg-white shadow-lg rounded-lg pointer-events-auto ring-1 ring-black/5 overflow-hidden">
+								<div className="p-4">
+									<div className="flex items-start">
+										<div className="flex-shrink-0">
+											<ExclamationCircleIcon
+												className="h-6 w-6 text-red-400"
+												aria-hidden="true"
+											/>
+										</div>
+										<div className="ml-3 w-0 flex-1 pt-0.5">
+											<DialogTitle
+												as="p"
+												className="text-sm font-medium text-gray-900"
+											>
+												Error
+											</DialogTitle>
+											<p className="mt-1 text-sm text-gray-500">{error}</p>
+										</div>
+										<div className="ml-4 flex-shrink-0 flex">
+											<button
+												type="button"
+												className="bg-white rounded-md inline-flex text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+												onClick={closeError}
+											>
+												<span className="sr-only">Close</span>
+												<XMarkIcon className="h-5 w-5" aria-hidden="true" />
+											</button>
+										</div>
+									</div>
+								</div>
+							</DialogPanel>
+						</TransitionChild>
 					</div>
 				</Dialog>
 			</Transition>

@@ -1,16 +1,16 @@
 import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { Handle, NodeProps, Position } from 'reactflow';
-import { AdjustmentsHorizontalIcon, PlusIcon, MinusIcon, XMarkIcon } from '@heroicons/react/24/solid'
+
+import { TrashIcon } from '@heroicons/react/24/outline';
+import { MinusIcon, PlusIcon } from '@heroicons/react/24/solid';
 
 import { PromptNode, useFlowStore } from '../store/flowStore';
-import NodeSettings from './NodeSettings';
 
 const PromptNodeComponent = ({ data, id, isConnectable }: NodeProps<PromptNode['data']>) => {
-	const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 	const [isMaximized, setIsMaximized] = useState(false);
 	const textareaRef = useRef<HTMLTextAreaElement>(null);
 	const cursorPositionRef = useRef<{ start: number; end: number } | null>(null);
-	const { updateNodeContent, updateNodeSettings, deleteNode } = useFlowStore();
+	const { updateNodeContent, deleteNode } = useFlowStore();
 
 	// Auto-resize textarea based on content
 	const adjustTextareaHeight = useCallback(() => {
@@ -35,7 +35,7 @@ const PromptNodeComponent = ({ data, id, isConnectable }: NodeProps<PromptNode['
 		const textarea = evt.target;
 		cursorPositionRef.current = {
 			start: textarea.selectionStart,
-			end: textarea.selectionEnd
+			end: textarea.selectionEnd,
 		};
 		updateNodeContent(id, textarea.value);
 		adjustTextareaHeight();
@@ -74,8 +74,8 @@ const PromptNodeComponent = ({ data, id, isConnectable }: NodeProps<PromptNode['
 
 	const getPlaceholder = () => {
 		return data.type === 'input'
-			? "Enter your prompt template here...\nUse {{variables}} for dynamic content"
-			: "Enter your transformation prompt here...\nUse {{input}} to reference incoming content";
+			? 'Enter your prompt template here...\nUse {{variables}} for dynamic content'
+			: 'Enter your transformation prompt here...\nUse {{input}} to reference incoming content';
 	};
 
 	const handleMaximize = (e: React.MouseEvent) => {
@@ -90,9 +90,7 @@ const PromptNodeComponent = ({ data, id, isConnectable }: NodeProps<PromptNode['
 
 	const handleDelete = (e: React.MouseEvent) => {
 		e.stopPropagation();
-		if (window.confirm('Are you sure you want to delete this node?')) {
-			deleteNode(id);
-		}
+		deleteNode(id);
 	};
 
 	const getTypeStyles = () => {
@@ -104,21 +102,25 @@ const PromptNodeComponent = ({ data, id, isConnectable }: NodeProps<PromptNode['
 	return (
 		<>
 			{/* Regular Node View */}
-			<div className={`relative bg-white rounded-lg shadow-lg border-2 border-gray-200 p-4 ${isMaximized ? 'min-w-[500px]' : 'min-w-[200px]'}`}>
+			<div
+				className={`relative bg-white rounded-lg shadow-lg border-2 border-gray-200 p-4 ${isMaximized ? 'min-w-[500px]' : 'min-w-[200px]'}`}
+			>
 				<Handle type="target" position={Position.Top} isConnectable={isConnectable} />
 
 				<div className="mb-2 flex justify-between items-center">
-					<span className={`inline-block px-2 py-1 text-xs font-medium rounded-full ${getTypeStyles()}`}>
+					<span
+						className={`inline-block px-2 py-1 text-xs font-medium rounded-full ${getTypeStyles()}`}
+					>
 						{data.type}
 					</span>
 					<div className="flex gap-2">
-						{(isMaximized ? (
+						{isMaximized ? (
 							<button
 								onClick={handleMinimize}
 								className="text-gray-500 hover:text-gray-700"
 								title="Exit fullscreen (Esc)"
 							>
-								<MinusIcon className="size-4"/>
+								<MinusIcon className="size-4" />
 							</button>
 						) : (
 							<button
@@ -126,23 +128,15 @@ const PromptNodeComponent = ({ data, id, isConnectable }: NodeProps<PromptNode['
 								className="text-sm text-gray-500 hover:text-gray-700"
 								title="Edit in fullscreen (⌘/Ctrl + Enter)"
 							>
-								<PlusIcon className="size-4"/>
+								<PlusIcon className="size-4" />
 							</button>
-
-						))}
-						<button
-							onClick={() => setIsSettingsOpen(true)}
-							className="text-sm text-gray-500 hover:text-gray-700"
-							title="Configure node settings"
-						>
-							<AdjustmentsHorizontalIcon className="size-4"/>
-						</button>
+						)}
 						<button
 							onClick={handleDelete}
 							className="text-sm text-gray-500 hover:text-gray-700"
 							title="Delete node"
 						>
-							<XMarkIcon className="size-4"/>
+							<TrashIcon className="size-4" />
 						</button>
 					</div>
 				</div>
@@ -164,13 +158,6 @@ const PromptNodeComponent = ({ data, id, isConnectable }: NodeProps<PromptNode['
 
 				<Handle type="source" position={Position.Bottom} isConnectable={isConnectable} />
 			</div>
-
-			<NodeSettings
-				node={{ id, data } as PromptNode}
-				isOpen={isSettingsOpen}
-				onClose={() => setIsSettingsOpen(false)}
-				onUpdate={updateNodeSettings}
-			/>
 		</>
 	);
 };
