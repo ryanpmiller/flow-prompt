@@ -1,6 +1,7 @@
 interface ModelConfig {
 	name: string;
 	maxOutput: number;
+	maxTokensParam?: 'max_tokens' | 'max_completion_tokens'; // optional parameter name override
 }
 
 export const MODEL_CONFIGS: Record<string, ModelConfig> = {
@@ -15,6 +16,7 @@ export const MODEL_CONFIGS: Record<string, ModelConfig> = {
 	'o4-mini-2025-04-16': {
 		name: 'o4-Mini',
 		maxOutput: 100000,
+		maxTokensParam: 'max_completion_tokens',
 	},
 	'claude-3-7-sonnet-20250219': {
 		name: 'Claude 3.7 Sonnet',

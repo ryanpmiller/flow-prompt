@@ -1,4 +1,5 @@
 import { Fragment, useState } from 'react';
+
 import { Dialog, DialogPanel, DialogTitle, Transition, TransitionChild } from '@headlessui/react';
 
 import { useFlowStore } from '../store/flowStore';
@@ -157,9 +158,13 @@ export function SaveTemplateDialog({ isOpen, onClose }: { isOpen: boolean; onClo
 													name="category"
 													className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
 													value={
-														showCustomCategory ? 'Custom' : formData.category
+														showCustomCategory
+															? 'Custom'
+															: formData.category
 													}
-													onChange={(e) => handleCategoryChange(e.target.value)}
+													onChange={(e) =>
+														handleCategoryChange(e.target.value)
+													}
 												>
 													{DEFAULT_CATEGORIES.map((cat) => (
 														<option key={cat} value={cat}>

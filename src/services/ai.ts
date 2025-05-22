@@ -71,12 +71,13 @@ export const createCompletion = async ({
 	prompt,
 	model,
 	temperature = 0.7,
-	maxTokens,
+	maxTokens
 }: {
 	prompt: string;
 	model: SupportedModel;
 	temperature?: number;
-	maxTokens: number;
+	maxTokens?: number;
+	max_completion_tokens?: number;
 }): Promise<CompletionResult> => {
 	validateEnvironment();
 
@@ -125,6 +126,11 @@ export const createCompletion = async ({
 					throw new Error('OpenAI API key not found');
 				}
 
+				// Determine which token parameter to use
+				const tokenLimit = model.startsWith('o4-mini')
+					? { max_completion_tokens: maxTokens }
+					: { max_tokens: maxTokens };
+
 				const response = await fetch('/api/openai/chat/completions', {
 					method: 'POST',
 					headers: {
@@ -134,7 +140,7 @@ export const createCompletion = async ({
 					body: JSON.stringify({
 						model,
 						messages: [{ role: 'user', content: prompt }],
-						max_tokens: maxTokens,
+						...tokenLimit,
 						temperature,
 					}),
 				});

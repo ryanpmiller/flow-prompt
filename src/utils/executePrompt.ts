@@ -1,6 +1,6 @@
 import { Edge } from 'reactflow';
 
-import { DEFAULT_MODEL, SupportedModel } from '../config/models';
+import { DEFAULT_MODEL, SupportedModel, getModelConfig } from '../config/models';
 import { createCompletion } from '../services/ai';
 import { PromptNode } from '../store/flowStore';
 import { getMaxOutputTokens } from './tokenCounter';
@@ -27,13 +27,15 @@ export interface NodeResult {
 const callLLM = async ({ content, settings }: ExecutePromptParams): Promise<NodeResult> => {
 	try {
 		const model = settings?.model || DEFAULT_MODEL;
-		const maxOutputTokens = getMaxOutputTokens(model);
+		const modelConfig = getModelConfig(model);
+		const maxOutputTokens = modelConfig.maxOutput;
+		const tokenParam = modelConfig.maxTokensParam || 'maxTokens';
 
 		const response = await createCompletion({
 			prompt: content,
 			model,
 			temperature: settings?.temperature,
-			maxTokens: maxOutputTokens,
+			[tokenParam]: maxOutputTokens,
 		});
 
 		const usage = {
