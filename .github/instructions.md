@@ -16,6 +16,7 @@ Prompt Flow Builder
 
 - Do not use deprecated node packages. Attempt to use the latest most popular solution suited for the task.
 - Do not use deprecated React components. Instead find the latest requirements and use the most appropriate replacement.
+    - Never use `Transition.child`, `Dialog.panel`, `Dialog.title`.
 
 ## Tech Stack Guidelines
 

@@ -176,7 +176,7 @@ export default function FlowToolbar() {
 			<Transition appear show={!!error} as={Fragment}>
 				<Dialog as="div" className="relative z-10" onClose={closeError}>
 					<TransitionChild
-						as={Fragment}
+						as="div"
 						enter="ease-out duration-300"
 						enterFrom="opacity-0"
 						enterTo="opacity-100"
@@ -189,7 +189,7 @@ export default function FlowToolbar() {
 
 					<div className="fixed inset-0 flex items-end px-4 py-6 pointer-events-none sm:p-6 sm:items-start">
 						<TransitionChild
-							as={Fragment}
+							as="div"
 							enter="ease-out transform duration-300"
 							enterFrom="opacity-0 translate-y-4"
 							enterTo="opacity-100 translate-y-0"
@@ -237,7 +237,7 @@ export default function FlowToolbar() {
 			<Transition appear show={isResultsOpen} as={Fragment}>
 				<Dialog as="div" className="relative z-10" onClose={setIsResultsOpen}>
 					<TransitionChild
-						as={Fragment}
+						as="div"
 						enter="ease-out duration-300"
 						enterFrom="opacity-0"
 						enterTo="opacity-100"
@@ -254,7 +254,7 @@ export default function FlowToolbar() {
 					<div className="fixed inset-0 z-10 overflow-y-auto">
 						<div className="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
 							<TransitionChild
-								as={Fragment}
+								as="div"
 								enter="ease-out duration-300"
 								enterFrom="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
 								enterTo="opacity-100 translate-y-0 sm:scale-100"
@@ -262,7 +262,6 @@ export default function FlowToolbar() {
 								leaveFrom="opacity-100 translate-y-0 sm:scale-100"
 								leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
 							>
-								{' '}
 								<DialogPanel className="w-full max-w-lg transform overflow-hidden rounded-lg bg-white p-6 text-left align-middle shadow-xl transition-all">
 									<DialogTitle
 										as="h3"
@@ -347,7 +346,7 @@ export default function FlowToolbar() {
 			<Transition appear show={!!error} as={Fragment}>
 				<Dialog as="div" className="relative z-10" onClose={closeError}>
 					<TransitionChild
-						as={Fragment}
+						as="div"
 						enter="ease-out duration-300"
 						enterFrom="opacity-0"
 						enterTo="opacity-100"
@@ -360,7 +359,7 @@ export default function FlowToolbar() {
 
 					<div className="fixed inset-0 flex items-end px-4 py-6 pointer-events-none sm:p-6 sm:items-start">
 						<TransitionChild
-							as={Fragment}
+							as="div"
 							enter="ease-out transform duration-300"
 							enterFrom="opacity-0 translate-y-4"
 							enterTo="opacity-100 translate-y-0"

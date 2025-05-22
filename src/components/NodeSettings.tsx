@@ -63,7 +63,7 @@ export default function NodeSettings({ isOpen, onClose }: NodeSettingsProps) {
 		<Transition appear show={isOpen} as={Fragment}>
 			<Dialog as="div" className="relative z-50" onClose={onClose}>
 				<TransitionChild
-					as={Fragment}
+					as="div"
 					enter="ease-out duration-300"
 					enterFrom="opacity-0"
 					enterTo="opacity-100"
@@ -80,7 +80,7 @@ export default function NodeSettings({ isOpen, onClose }: NodeSettingsProps) {
 				<div className="fixed inset-0 z-10 overflow-y-auto">
 					<div className="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
 						<TransitionChild
-							as={Fragment}
+							as="div"
 							enter="ease-out duration-300"
 							enterFrom="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
 							enterTo="opacity-100 translate-y-0 sm:scale-100"
