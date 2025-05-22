@@ -1,39 +1,73 @@
-import { Fragment } from 'react';
-import { Dialog, Transition } from '@headlessui/react';
+import { Fragment, useEffect, useState } from 'react';
+
+import { Dialog, DialogPanel, DialogTitle, Transition, TransitionChild } from '@headlessui/react';
 import { XMarkIcon } from '@heroicons/react/24/outline';
-import { PromptNode } from '../store/flowStore';
+
+import { DEFAULT_MODEL, MODEL_CONFIGS, SupportedModel } from '../config/models';
+import { NodeSettings as NodeSettingsType, PromptNode } from '../store/flowStore';
+
+interface RequiredNodeSettings extends Omit<NodeSettingsType, 'model'> {
+	model: SupportedModel;
+	temperature: number;
+	tone: string;
+}
 
 interface NodeSettingsProps {
 	node: PromptNode;
 	isOpen: boolean;
 	onClose: () => void;
-	onUpdate: (nodeId: string, settings: Record<string, any>) => void;
+	onUpdate: (nodeId: string, settings: RequiredNodeSettings) => void;
 }
 
+const TONE_OPTIONS = [
+	'Professional',
+	'Casual',
+	'Friendly',
+	'Enthusiastic',
+	'Formal',
+	'Academic',
+	'Creative',
+	'Persuasive',
+];
+
 export default function NodeSettings({ node, isOpen, onClose, onUpdate }: NodeSettingsProps) {
-	const handleSave = (settings: Record<string, any>) => {
+	const [settings, setSettings] = useState<RequiredNodeSettings>({
+		temperature: 0.7,
+		model: DEFAULT_MODEL,
+		tone: 'Professional',
+	});
+
+	useEffect(() => {
+		if (node.data.settings) {
+			// Ensure we have all required fields with defaults if needed
+			setSettings({
+				temperature: node.data.settings.temperature ?? 0.7,
+				model: node.data.settings.model ?? DEFAULT_MODEL,
+				tone: node.data.settings.tone ?? 'Professional',
+			});
+		}
+	}, [node.data.settings]);
+
+	const handleModelChange = (model: SupportedModel) => {
+		setSettings((prev) => ({
+			...prev,
+			model,
+		}));
+	};
+
+	const handleSubmit = () => {
 		onUpdate(node.id, settings);
 		onClose();
 	};
 
 	return (
-		<Transition.Root show={isOpen} as={Fragment}>
-			<Dialog as="div" className="relative z-10" onClose={onClose}>
-				<Transition.Child
-					as={Fragment}
-					enter="ease-out duration-300"
-					enterFrom="opacity-0"
-					enterTo="opacity-100"
-					leave="ease-in duration-200"
-					leaveFrom="opacity-100"
-					leaveTo="opacity-0"
-				>
-					<div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
-				</Transition.Child>
+		<Transition show={isOpen} as={Fragment}>
+			<Dialog as="div" className="relative z-50" onClose={onClose}>
+				<div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
 
 				<div className="fixed inset-0 z-10 overflow-y-auto">
 					<div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
-						<Transition.Child
+						<TransitionChild
 							as={Fragment}
 							enter="ease-out duration-300"
 							enterFrom="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
@@ -42,72 +76,129 @@ export default function NodeSettings({ node, isOpen, onClose, onUpdate }: NodeSe
 							leaveFrom="opacity-100 translate-y-0 sm:scale-100"
 							leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
 						>
-							<Dialog.Panel className="relative transform rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6">
+							<DialogPanel className="relative transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6">
 								<div className="absolute right-0 top-0 hidden pr-4 pt-4 sm:block">
 									<button
 										type="button"
-										className="rounded-md bg-white text-gray-400 hover:text-gray-500"
+										className="rounded-md bg-white text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
 										onClick={onClose}
 									>
 										<span className="sr-only">Close</span>
 										<XMarkIcon className="h-6 w-6" aria-hidden="true" />
 									</button>
 								</div>
-								<div className="sm:flex sm:items-start">
-									<div className="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left w-full">
-										<Dialog.Title as="h3" className="text-base font-semibold leading-6 text-gray-900">
+								<div>
+									<div className="mt-3">
+										<DialogTitle
+											as="h3"
+											className="text-lg font-semibold leading-6 text-gray-900"
+										>
 											Node Settings
-										</Dialog.Title>
-										<div className="mt-4">
-											{node.data.type === 'transform' && (
-												<div className="space-y-4">
-													<div>
-														<label className="block text-sm font-medium text-gray-700">
-															Temperature
-														</label>
-														<input
-															type="range"
-															min="0"
-															max="1"
-															step="0.1"
-															defaultValue={node.data.settings?.temperature ?? 0.7}
-															onChange={(e) =>
-																handleSave({
-																	...node.data.settings,
-																	temperature: parseFloat(e.target.value),
-																})
-															}
-															className="w-full"
-														/>
-													</div>
-													<div>
-														<label className="block text-sm font-medium text-gray-700">
-															Model
-														</label>
-														<select
-															defaultValue={node.data.settings?.model ?? 'gpt-3.5-turbo'}
-															onChange={(e) =>
-																handleSave({
-																	...node.data.settings,
-																	model: e.target.value,
-																})
-															}
-															className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-														>
-															<option value="gpt-3.5-turbo">GPT-3.5 Turbo</option>
-															<option value="gpt-4">GPT-4</option>
-														</select>
-													</div>
-												</div>
-											)}
+										</DialogTitle>
+										<div className="mt-4 space-y-4">
+											<div>
+												<label
+													htmlFor="model"
+													className="block text-sm font-medium text-gray-700"
+												>
+													Model
+												</label>
+												<select
+													id="model"
+													name="model"
+													className="mt-1 block w-full rounded-md border-gray-300 py-2 pl-3 pr-10 text-base focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
+													value={settings.model}
+													onChange={(e) =>
+														handleModelChange(
+															e.target.value as SupportedModel
+														)
+													}
+												>
+													{Object.entries(MODEL_CONFIGS).map(
+														([id, config]) => (
+															<option key={id} value={id}>
+																{config.name}
+															</option>
+														)
+													)}
+												</select>
+											</div>
+
+											<div>
+												<label
+													htmlFor="temperature"
+													className="block text-sm font-medium text-gray-700"
+												>
+													Temperature ({settings.temperature})
+												</label>
+												<input
+													type="range"
+													id="temperature"
+													name="temperature"
+													min="0"
+													max="1"
+													step="0.1"
+													value={settings.temperature}
+													onChange={(e) =>
+														setSettings((prev) => ({
+															...prev,
+															temperature: Number(e.target.value),
+														}))
+													}
+													className="mt-1 w-full"
+												/>
+											</div>
+
+											<div>
+												<label
+													htmlFor="tone"
+													className="block text-sm font-medium text-gray-700"
+												>
+													Tone
+												</label>
+												<select
+													id="tone"
+													name="tone"
+													className="mt-1 block w-full rounded-md border-gray-300 py-2 pl-3 pr-10 text-base focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
+													value={settings.tone}
+													onChange={(e) =>
+														setSettings((prev) => ({
+															...prev,
+															tone: e.target.value,
+														}))
+													}
+												>
+													{TONE_OPTIONS.map((tone) => (
+														<option key={tone} value={tone}>
+															{tone}
+														</option>
+													))}
+												</select>
+											</div>
 										</div>
 									</div>
 								</div>
-							</Dialog.Panel>
-						</Transition.Child>
+								<div className="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">
+									<button
+										type="button"
+										className="inline-flex w-full justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 sm:ml-3 sm:w-auto"
+										onClick={handleSubmit}
+									>
+										Save
+									</button>
+									<button
+										type="button"
+										className="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto"
+										onClick={onClose}
+									>
+										Cancel
+									</button>
+								</div>
+							</DialogPanel>
+						</TransitionChild>
 					</div>
 				</div>
 			</Dialog>
-		</Transition.Root>
+		</Transition>
 	);
 }
