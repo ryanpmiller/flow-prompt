@@ -71,7 +71,7 @@ export const createCompletion = async ({
 	prompt,
 	model,
 	temperature = 0.7,
-	maxTokens
+	maxTokens,
 }: {
 	prompt: string;
 	model: SupportedModel;
