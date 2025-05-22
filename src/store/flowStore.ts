@@ -39,6 +39,7 @@ interface FlowState {
 	addNode: (node: Partial<PromptNode>) => void;
 	updateNodeContent: (nodeId: string, content: string) => void;
 	updateNodeSettings: (nodeId: string, settings: NodeSettings) => void;
+	deleteNode: (nodeId: string) => void;
 	resetFlow: () => void;
 }
 
@@ -105,6 +106,14 @@ export const useFlowStore = create<FlowState>((set, get) => ({
 		set({
 			nodes: get().nodes.map((node) =>
 				node.id === nodeId ? { ...node, data: { ...node.data, settings } } : node
+			),
+		});
+	},
+	deleteNode: (nodeId: string) => {
+		set({
+			nodes: get().nodes.filter((node) => node.id !== nodeId),
+			edges: get().edges.filter(
+				(edge) => edge.source !== nodeId && edge.target !== nodeId
 			),
 		});
 	},

@@ -12,6 +12,10 @@ Tech Stack Suggestion
 - AI Integration: Lambda + API Gateway to call OpenAI/Claude
 - Payments: Stripe (webhooks routed via Lambda/API GW)
 
+Installation:
+- Do not use deprecated node packages. Attempt to use the latest most popular solution.
+- Do not use deprecated components. Instead find the latest requirements and use the most appropriate replacement.
+
 What It Does
 
 Prompt Flow Builder lets users:

@@ -61,12 +61,22 @@ export default function NodeSettings({ node, isOpen, onClose, onUpdate }: NodeSe
 	};
 
 	return (
-		<Transition show={isOpen} as={Fragment}>
+		<Transition appear show={isOpen} as={Fragment}>
 			<Dialog as="div" className="relative z-50" onClose={onClose}>
-				<div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
+				<TransitionChild
+					as={Fragment}
+					enter="ease-out duration-300"
+					enterFrom="opacity-0"
+					enterTo="opacity-100"
+					leave="ease-in duration-200"
+					leaveFrom="opacity-100"
+					leaveTo="opacity-0"
+				>
+					<div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true" />
+				</TransitionChild>
 
 				<div className="fixed inset-0 z-10 overflow-y-auto">
-					<div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+					<div className="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
 						<TransitionChild
 							as={Fragment}
 							enter="ease-out duration-300"
@@ -87,15 +97,16 @@ export default function NodeSettings({ node, isOpen, onClose, onUpdate }: NodeSe
 										<XMarkIcon className="h-6 w-6" aria-hidden="true" />
 									</button>
 								</div>
-								<div>
-									<div className="mt-3">
-										<DialogTitle
-											as="h3"
-											className="text-lg font-semibold leading-6 text-gray-900"
-										>
-											Node Settings
-										</DialogTitle>
-										<div className="mt-4 space-y-4">
+
+								<div className="mt-3">
+									<DialogTitle
+										as="h3"
+										className="text-lg font-semibold leading-6 text-gray-900"
+									>
+										Node Settings
+									</DialogTitle>
+									<div className="mt-6">
+										<div className="space-y-4">
 											<div>
 												<label
 													htmlFor="model"
@@ -106,7 +117,7 @@ export default function NodeSettings({ node, isOpen, onClose, onUpdate }: NodeSe
 												<select
 													id="model"
 													name="model"
-													className="mt-1 block w-full rounded-md border-gray-300 py-2 pl-3 pr-10 text-base focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
+													className="mt-1 block w-full rounded-md border border-gray-300 py-2 pl-3 pr-10 text-base focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
 													value={settings.model}
 													onChange={(e) =>
 														handleModelChange(
@@ -159,7 +170,7 @@ export default function NodeSettings({ node, isOpen, onClose, onUpdate }: NodeSe
 												<select
 													id="tone"
 													name="tone"
-													className="mt-1 block w-full rounded-md border-gray-300 py-2 pl-3 pr-10 text-base focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
+													className="mt-1 block w-full rounded-md border border-gray-300 py-2 pl-3 pr-10 text-base focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
 													value={settings.tone}
 													onChange={(e) =>
 														setSettings((prev) => ({
@@ -178,6 +189,7 @@ export default function NodeSettings({ node, isOpen, onClose, onUpdate }: NodeSe
 										</div>
 									</div>
 								</div>
+
 								<div className="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">
 									<button
 										type="button"

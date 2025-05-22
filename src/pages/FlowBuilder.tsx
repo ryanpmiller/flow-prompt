@@ -169,15 +169,18 @@ function Flow() {
 
 				{/* Main flow builder area */}
 				<div className="flex-1 bg-white rounded-lg shadow">
-					<div className="react-flow-wrapper" style={{ width: '100%', height: '100%' }}>
+					<div
+						className="react-flow-wrapper"
+						style={{ width: '100%', height: '100%' }}
+						onDrop={onDrop}
+						onDragOver={onDragOver}
+					>
 						<ReactFlow
 							nodes={nodes}
 							edges={edges}
 							onNodesChange={onNodesChange}
 							onEdgesChange={onEdgesChange}
 							onConnect={onConnect}
-							onDrop={onDrop}
-							onDragOver={onDragOver}
 							nodeTypes={nodeTypes}
 							fitView
 						>

@@ -13,7 +13,6 @@
 		"preview": "vite preview"
 	},
 	"dependencies": {
-		"@types/react-beautiful-dnd": "^13.1.8",
 		"@types/react-router-dom": "^5.3.3",
 		"gpt-tokenizer": "^2.9.0",
 		"react": "^18.3.1",
@@ -40,7 +39,6 @@
 		"postcss": "^8.4.31",
 		"prettier": "^3.5.3",
 		"prettier-plugin-tailwindcss": "^0.6.11",
-		"react-beautiful-dnd": "^13.1.1",
 		"tailwindcss": "^3.4.1",
 		"typescript": "~5.8.3",
 		"typescript-eslint": "^8.30.1",

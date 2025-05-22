@@ -1,3 +1,4 @@
+import { SparklesIcon, BriefcaseIcon, UserGroupIcon } from '@heroicons/react/24/solid';
 import { Link } from 'react-router-dom';
 
 const featuredTemplates = [
@@ -32,17 +33,17 @@ const personas = [
 	{
 		title: 'For Creators',
 		description: 'Get viral content ideas instantly',
-		icon: '✨',
+		icon: <SparklesIcon className='size-14' />,
 	},
 	{
 		title: 'For Freelancers',
 		description: 'Send perfect client pitches',
-		icon: '💼',
+		icon: <BriefcaseIcon className='size-14' />,
 	},
 	{
 		title: 'For Job Seekers',
 		description: 'Get hired faster with tailored content',
-		icon: '🎯',
+		icon: <UserGroupIcon className='size-14' />,
 	},
 ];
 
@@ -170,7 +171,7 @@ export default function Home() {
 					<div className="grid grid-cols-1 gap-8 md:grid-cols-3">
 						{personas.map((persona) => (
 							<div key={persona.title} className="text-center">
-								<div className="text-4xl mb-4">{persona.icon}</div>
+								<div className="flex justify-center mb-4">{persona.icon}</div>
 								<h3 className="text-lg font-medium text-gray-900">
 									{persona.title}
 								</h3>

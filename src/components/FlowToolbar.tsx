@@ -1,7 +1,13 @@
 import { Fragment, useCallback, useState } from 'react';
 
-import { Dialog, Transition } from '@headlessui/react';
-import { BoltIcon, ExclamationCircleIcon, XMarkIcon } from '@heroicons/react/24/outline';
+import { Dialog, DialogPanel, DialogTitle, Transition, TransitionChild } from '@headlessui/react';
+import {
+	ArrowPathIcon,
+	CheckCircleIcon,
+	ExclamationCircleIcon,
+	PlayIcon,
+	XMarkIcon,
+} from '@heroicons/react/24/outline';
 
 import { useFlowStore } from '../store/flowStore';
 import { NodeResult, executeFlow } from '../utils/executePrompt';
@@ -112,36 +118,12 @@ export default function FlowToolbar() {
 				>
 					{isLoading ? (
 						<>
-							<svg
-								className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
-								fill="none"
-								viewBox="0 0 24 24"
-							>
-								<circle
-									className="opacity-25"
-									cx="12"
-									cy="12"
-									r="10"
-									stroke="currentColor"
-									strokeWidth="4"
-								></circle>
-								<path
-									className="opacity-75"
-									fill="currentColor"
-									d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-								></path>
-							</svg>
+							<ArrowPathIcon className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" />
 							Saving...
 						</>
 					) : isSaved ? (
 						<>
-							<svg className="w-4 h-4 mr-1.5" viewBox="0 0 20 20" fill="currentColor">
-								<path
-									fillRule="evenodd"
-									d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-									clipRule="evenodd"
-								/>
-							</svg>
+							<CheckCircleIcon className="w-4 h-4 mr-1.5" />
 							Saved!
 						</>
 					) : (
@@ -155,30 +137,12 @@ export default function FlowToolbar() {
 				>
 					{isLoading ? (
 						<>
-							<svg
-								className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
-								fill="none"
-								viewBox="0 0 24 24"
-							>
-								<circle
-									className="opacity-25"
-									cx="12"
-									cy="12"
-									r="10"
-									stroke="currentColor"
-									strokeWidth="4"
-								></circle>
-								<path
-									className="opacity-75"
-									fill="currentColor"
-									d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-								></path>
-							</svg>
+							<ArrowPathIcon className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" />
 							Running...
 						</>
 					) : (
 						<>
-							<BoltIcon className="w-4 h-4 mr-1.5" />
+							<PlayIcon className="w-4 h-4 mr-1.5" />
 							Execute Flow
 						</>
 					)}
@@ -186,43 +150,9 @@ export default function FlowToolbar() {
 			</div>
 
 			{/* Error Alert */}
-			{error && (
-				<div className="fixed inset-0 flex items-end px-4 py-6 pointer-events-none sm:p-6">
-					<div className="w-full flex flex-col items-center space-y-4 sm:items-end">
-						<div className="max-w-sm w-full bg-white shadow-lg rounded-lg pointer-events-auto ring-1 ring-black ring-opacity-5 overflow-hidden">
-							<div className="p-4">
-								<div className="flex items-start">
-									<div className="flex-shrink-0">
-										<ExclamationCircleIcon
-											className="h-6 w-6 text-red-400"
-											aria-hidden="true"
-										/>
-									</div>
-									<div className="ml-3 w-0 flex-1 pt-0.5">
-										<p className="text-sm font-medium text-gray-900">Error</p>
-										<p className="mt-1 text-sm text-gray-500">{error}</p>
-									</div>
-									<div className="ml-4 flex-shrink-0 flex">
-										<button
-											type="button"
-											className="bg-white rounded-md inline-flex text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-											onClick={closeError}
-										>
-											<span className="sr-only">Close</span>
-											<XMarkIcon className="h-5 w-5" aria-hidden="true" />
-										</button>
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-			)}
-
-			{/* Results Modal */}
-			<Transition.Root show={isResultsOpen} as={Fragment}>
-				<Dialog as="div" className="relative z-10" onClose={setIsResultsOpen}>
-					<Transition.Child
+			<Transition appear show={!!error} as={Fragment}>
+				<Dialog as="div" className="relative z-10" onClose={closeError}>
+					<TransitionChild
 						as={Fragment}
 						enter="ease-out duration-300"
 						enterFrom="opacity-0"
@@ -231,12 +161,68 @@ export default function FlowToolbar() {
 						leaveFrom="opacity-100"
 						leaveTo="opacity-0"
 					>
-						<div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
-					</Transition.Child>
+						<div className="fixed inset-0 bg-black/25" aria-hidden="true" />
+					</TransitionChild>
+
+					<div className="fixed inset-0 flex items-end px-4 py-6 pointer-events-none sm:p-6 sm:items-start">
+						<TransitionChild
+							as={Fragment}
+							enter="ease-out transform duration-300"
+							enterFrom="opacity-0 translate-y-4"
+							enterTo="opacity-100 translate-y-0"
+							leave="ease-in transform duration-200"
+							leaveFrom="opacity-100 translate-y-0"
+							leaveTo="opacity-0 translate-y-4"
+						>
+							<DialogPanel className="w-full max-w-sm bg-white shadow-lg rounded-lg pointer-events-auto ring-1 ring-black/5 overflow-hidden">
+								<div className="p-4">
+									<div className="flex items-start">
+										<div className="flex-shrink-0">
+											<ExclamationCircleIcon
+												className="h-6 w-6 text-red-400"
+												aria-hidden="true"
+											/>
+										</div>
+										<div className="ml-3 w-0 flex-1 pt-0.5">
+											<DialogTitle as="p" className="text-sm font-medium text-gray-900">Error</DialogTitle>
+											<p className="mt-1 text-sm text-gray-500">{error}</p>
+										</div>
+										<div className="ml-4 flex-shrink-0 flex">
+											<button
+												type="button"
+												className="bg-white rounded-md inline-flex text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+												onClick={closeError}
+											>
+												<span className="sr-only">Close</span>
+												<XMarkIcon className="h-5 w-5" aria-hidden="true" />
+											</button>
+										</div>
+									</div>
+								</div>
+							</DialogPanel>
+						</TransitionChild>
+					</div>
+				</Dialog>
+			</Transition>
+
+			{/* Results Modal */}
+			<Transition appear show={isResultsOpen} as={Fragment}>
+				<Dialog as="div" className="relative z-10" onClose={setIsResultsOpen}>
+					<TransitionChild
+						as={Fragment}
+						enter="ease-out duration-300"
+						enterFrom="opacity-0"
+						enterTo="opacity-100"
+						leave="ease-in duration-200"
+						leaveFrom="opacity-100"
+						leaveTo="opacity-0"
+					>
+						<div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true" />
+					</TransitionChild>
 
 					<div className="fixed inset-0 z-10 overflow-y-auto">
-						<div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
-							<Transition.Child
+						<div className="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
+							<TransitionChild
 								as={Fragment}
 								enter="ease-out duration-300"
 								enterFrom="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
@@ -244,68 +230,64 @@ export default function FlowToolbar() {
 								leave="ease-in duration-200"
 								leaveFrom="opacity-100 translate-y-0 sm:scale-100"
 								leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-							>
-								<Dialog.Panel className="relative transform rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6">
-									<div>
-										<Dialog.Title
-											as="h3"
-											className="text-lg font-medium leading-6 text-gray-900 mb-4"
-										>
-											Flow Results
-										</Dialog.Title>
-										<div className="mt-2 max-h-[60vh] overflow-y-auto">
-											{nodes.map((node) => {
-												const result = executionResults.get(node.id);
-												const hasError =
-													result?.error ||
-													result?.text?.startsWith('Error:');
+							>                                <DialogPanel className="w-full max-w-lg transform overflow-hidden rounded-lg bg-white p-6 text-left align-middle shadow-xl transition-all">
+                                    <DialogTitle as="h3" className="text-lg font-medium leading-6 text-gray-900 mb-4">
+                                        Flow Results
+                                    </DialogTitle>
 
-												return (
-													<div key={node.id} className="mb-4">
-														<div className="font-medium text-sm text-gray-500 flex justify-between items-center">
-															<span>Node: {node.data.type}</span>
-															{hasError && (
-																<span className="text-red-500">
-																	Failed
-																</span>
-															)}
-														</div>
+									<div className="mt-2 max-h-[60vh] overflow-y-auto">
+										{nodes.map((node) => {
+											const result = executionResults.get(node.id);
+											const hasError =
+												result?.error ||
+												result?.text?.startsWith('Error:');
 
-														<div
-															className={`mt-1 p-3 rounded-md ${
-																hasError
-																	? 'bg-red-50 text-red-700'
-																	: 'bg-gray-50 text-gray-900'
-															}`}
-														>
-															<pre className="text-sm whitespace-pre-wrap">
-																{result?.text || 'No result'}
-															</pre>
-														</div>
-
-														{result?.usage && !hasError && (
-															<div className="mt-2 text-xs text-gray-500">
-																<span className="font-medium">
-																	Node Tokens:
-																</span>{' '}
-																{formatTokenCount(
-																	result.usage.totalTokens
-																)}
-															</div>
+											return (
+												<div key={node.id} className="mb-4">
+													<div className="font-medium text-sm text-gray-500 flex justify-between items-center">
+														<span>Node: {node.data.type}</span>
+														{hasError && (
+															<span className="text-red-500">
+																Failed
+															</span>
 														)}
 													</div>
-												);
-											})}
 
-											{/* Overall Usage Stats */}
-											{totalUsage && (
-												<TokenUsageDisplay
-													usage={totalUsage}
-													model=""
-												/>
-											)}
-										</div>
+													<div
+														className={`mt-1 p-3 rounded-md ${
+															hasError
+																? 'bg-red-50 text-red-700'
+																: 'bg-gray-50 text-gray-900'
+														}`}
+													>
+														<pre className="text-sm whitespace-pre-wrap">
+															{result?.text || 'No result'}
+														</pre>
+													</div>
+
+													{result?.usage && !hasError && (
+														<div className="mt-2 text-xs text-gray-500">
+															<span className="font-medium">
+																Node Tokens:{' '}
+															</span>
+															{formatTokenCount(
+																result.usage.totalTokens
+															)}
+														</div>
+													)}
+												</div>
+											);
+										})}
+
+										{/* Overall Usage Stats */}
+										{totalUsage && (
+											<TokenUsageDisplay
+												usage={totalUsage}
+												model=""
+											/>
+										)}
 									</div>
+
 									<div className="mt-5 sm:mt-6">
 										<button
 											type="button"
@@ -314,13 +296,12 @@ export default function FlowToolbar() {
 										>
 											Close
 										</button>
-									</div>
-								</Dialog.Panel>
-							</Transition.Child>
+									</div>                                </DialogPanel>
+							</TransitionChild>
 						</div>
 					</div>
 				</Dialog>
-			</Transition.Root>
+			</Transition>
 		</>
 	);
 }
