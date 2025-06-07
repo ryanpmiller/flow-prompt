@@ -2,15 +2,15 @@ import { useState } from 'react';
 
 import { useFlowStore } from '../store/flowStore';
 import { useTemplateStore } from '../store/templateStore';
-import { Modal, ModalActions } from './Modal';
 import {
 	FormField,
 	FormInput,
-	FormTextarea,
 	FormSelect,
+	FormTextarea,
 	PrimaryButton,
-	SecondaryButton
+	SecondaryButton,
 } from './Form';
+import { Modal, ModalActions } from './Modal';
 
 interface SaveTemplateFormData {
 	name: string;
@@ -77,8 +77,18 @@ export function SaveTemplateDialog({ isOpen, onClose }: { isOpen: boolean; onClo
 			title="Save as Template"
 			description="Create a reusable template from your current flow"
 			icon={
-				<svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-					<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+				<svg
+					className="w-4 h-4 text-white"
+					fill="none"
+					stroke="currentColor"
+					viewBox="0 0 24 24"
+				>
+					<path
+						strokeLinecap="round"
+						strokeLinejoin="round"
+						strokeWidth={2}
+						d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"
+					/>
 				</svg>
 			}
 		>
@@ -146,15 +156,23 @@ export function SaveTemplateDialog({ isOpen, onClose }: { isOpen: boolean; onClo
 				</FormField>
 
 				<ModalActions>
-					<SecondaryButton onClick={onClose}>
-						Cancel
-					</SecondaryButton>
+					<SecondaryButton onClick={onClose}>Cancel</SecondaryButton>
 					<PrimaryButton
 						type="submit"
 						disabled={!nodes.length}
 						icon={
-							<svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-								<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+							<svg
+								className="w-4 h-4"
+								fill="none"
+								stroke="currentColor"
+								viewBox="0 0 24 24"
+							>
+								<path
+									strokeLinecap="round"
+									strokeLinejoin="round"
+									strokeWidth={2}
+									d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"
+								/>
 							</svg>
 						}
 					>

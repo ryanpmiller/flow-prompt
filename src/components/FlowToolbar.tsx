@@ -5,18 +5,18 @@ import {
 	AdjustmentsHorizontalIcon,
 	ArrowPathIcon,
 	CheckCircleIcon,
+	DocumentTextIcon,
 	ExclamationCircleIcon,
 	FolderIcon,
 	PlayIcon,
 	XMarkIcon,
-	DocumentTextIcon,
 } from '@heroicons/react/24/outline';
 
 import { useFlowStore } from '../store/flowStore';
 import { NodeResult, executeFlow } from '../utils/executePrompt';
 import { formatTokenCount } from '../utils/tokenCounter';
-import { Modal, ModalActions } from './Modal';
 import { PrimaryButton } from './Form';
+import { Modal, ModalActions } from './Modal';
 import NodeSettings from './NodeSettings';
 import { SaveTemplateDialog } from './SaveTemplateDialog';
 
@@ -284,9 +284,7 @@ export default function FlowToolbar() {
 				</div>
 
 				<ModalActions>
-					<PrimaryButton onClick={() => setIsResultsOpen(false)}>
-						Close
-					</PrimaryButton>
+					<PrimaryButton onClick={() => setIsResultsOpen(false)}>Close</PrimaryButton>
 				</ModalActions>
 			</Modal>
 

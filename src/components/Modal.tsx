@@ -1,4 +1,5 @@
 import { Fragment, ReactNode } from 'react';
+
 import { Dialog, DialogPanel, DialogTitle, Transition, TransitionChild } from '@headlessui/react';
 
 // Re-export form components for backward compatibility
@@ -10,7 +11,7 @@ export {
 	FormSlider,
 	FormActions,
 	PrimaryButton,
-	SecondaryButton
+	SecondaryButton,
 } from './Form';
 
 interface ModalProps {
@@ -64,16 +65,12 @@ export function Modal({ isOpen, onClose, title, description, icon, children }: M
 										{title}
 									</DialogTitle>
 									{description && (
-										<p className="mt-2 text-sm text-gray-600">
-											{description}
-										</p>
+										<p className="mt-2 text-sm text-gray-600">{description}</p>
 									)}
 								</div>
 
 								{/* Content */}
-								<div className="p-6">
-									{children}
-								</div>
+								<div className="p-6">{children}</div>
 							</DialogPanel>
 						</TransitionChild>
 					</div>
@@ -85,9 +82,5 @@ export function Modal({ isOpen, onClose, title, description, icon, children }: M
 
 // Modal-specific actions component (different from FormActions)
 export function ModalActions({ children }: { children: ReactNode }) {
-	return (
-		<div className="flex justify-end gap-3 pt-4 border-t border-gray-100">
-			{children}
-		</div>
-	);
+	return <div className="flex justify-end gap-3 pt-4 border-t border-gray-100">{children}</div>;
 }

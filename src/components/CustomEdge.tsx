@@ -1,6 +1,8 @@
 import { memo } from 'react';
 import { EdgeProps, getBezierPath } from 'reactflow';
+
 import { XMarkIcon } from '@heroicons/react/24/outline';
+
 import { useFlowStore } from '../store/flowStore';
 
 const CustomEdge = ({
@@ -29,7 +31,7 @@ const CustomEdge = ({
 		e.stopPropagation();
 		// Extract target node ID from edge ID or use a different approach
 		// For now, we'll need to modify the store to accept edge ID
-		const edge = useFlowStore.getState().edges.find(edge => edge.id === id);
+		const edge = useFlowStore.getState().edges.find((edge) => edge.id === id);
 		if (edge) {
 			disconnectNode(edge.target);
 		}

@@ -3,9 +3,9 @@ import { useSearchParams } from 'react-router-dom';
 import ReactFlow, {
 	Background,
 	Controls,
+	EdgeTypes,
 	Node as FlowNode,
 	NodeTypes,
-	EdgeTypes,
 	OnSelectionChangeParams,
 	Panel,
 	ReactFlowInstance,
@@ -13,14 +13,11 @@ import ReactFlow, {
 } from 'reactflow';
 import 'reactflow/dist/style.css';
 
-import {
-	SparklesIcon,
-	ArrowRightIcon,
-} from '@heroicons/react/24/outline';
+import { ArrowRightIcon, SparklesIcon } from '@heroicons/react/24/outline';
 
+import CustomEdge from '../components/CustomEdge';
 import FlowToolbar from '../components/FlowToolbar';
 import PromptNodeComponent from '../components/PromptNode';
-import CustomEdge from '../components/CustomEdge';
 import { DEFAULT_MODEL } from '../config/models';
 import { useFlowStore } from '../store/flowStore';
 import { useTemplateStore } from '../store/templateStore';
@@ -127,7 +124,7 @@ const groupedTemplates = PROMPT_TEMPLATES.reduce(
 );
 
 // Get template visual configuration
-const getTemplateConfig = (template: typeof PROMPT_TEMPLATES[0]) => {
+const getTemplateConfig = (template: (typeof PROMPT_TEMPLATES)[0]) => {
 	if (template.type === 'input') {
 		return {
 			icon: SparklesIcon,
@@ -177,10 +174,13 @@ function Flow() {
 			if (template) {
 				resetFlow();
 				template.nodes.forEach((node) => {
-					addNode({
-						...node,
-						position: node.position,
-					}, { skipCollisionDetection: true });
+					addNode(
+						{
+							...node,
+							position: node.position,
+						},
+						{ skipCollisionDetection: true }
+					);
 				});
 				// Load template edges
 				if (template.edges && template.edges.length > 0) {
@@ -273,7 +273,9 @@ function Flow() {
 											onDragStart={(e) => onDragStart(e, template)}
 										>
 											<div className="flex items-center gap-3">
-												<div className={`p-2 rounded-lg ${config.tagColor} shadow-sm`}>
+												<div
+													className={`p-2 rounded-lg ${config.tagColor} shadow-sm`}
+												>
 													<IconComponent className="w-4 h-4" />
 												</div>
 												<div className="flex-1">

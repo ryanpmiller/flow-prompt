@@ -125,7 +125,7 @@ export const useFlowStore = create<FlowState>((set, get) => ({
 
 			// Check if position is available
 			const isPositionAvailable = (x: number, y: number) => {
-				return !nodes.some(existingNode => {
+				return !nodes.some((existingNode) => {
 					const dx = Math.abs(existingNode.position.x - x);
 					const dy = Math.abs(existingNode.position.y - y);
 					return dx < nodeWidth + spacing && dy < nodeHeight + spacing;
@@ -163,7 +163,7 @@ export const useFlowStore = create<FlowState>((set, get) => ({
 			);
 			return {
 				x: rightmostNode.position.x + nodeWidth + spacing,
-				y: rightmostNode.position.y
+				y: rightmostNode.position.y,
 			};
 		};
 
