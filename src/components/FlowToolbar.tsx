@@ -9,11 +9,14 @@ import {
 	FolderIcon,
 	PlayIcon,
 	XMarkIcon,
+	DocumentTextIcon,
 } from '@heroicons/react/24/outline';
 
 import { useFlowStore } from '../store/flowStore';
 import { NodeResult, executeFlow } from '../utils/executePrompt';
 import { formatTokenCount } from '../utils/tokenCounter';
+import { Modal, ModalActions } from './Modal';
+import { PrimaryButton } from './Form';
 import NodeSettings from './NodeSettings';
 import { SaveTemplateDialog } from './SaveTemplateDialog';
 
@@ -197,7 +200,7 @@ export default function FlowToolbar() {
 							leaveFrom="opacity-100 translate-y-0"
 							leaveTo="opacity-0 translate-y-4"
 						>
-							<DialogPanel className="w-full max-w-sm bg-white shadow-lg rounded-lg pointer-events-auto ring-1 ring-black/5 overflow-hidden">
+							<DialogPanel className="w-full sm:max-w-lg bg-white shadow-lg rounded-lg pointer-events-auto ring-1 ring-black/5 overflow-hidden">
 								<div className="p-4">
 									<div className="flex items-start">
 										<div className="flex-shrink-0">
@@ -234,104 +237,58 @@ export default function FlowToolbar() {
 			</Transition>
 
 			{/* Results Modal */}
-			<Transition appear show={isResultsOpen} as={Fragment}>
-				<Dialog as="div" className="relative z-10" onClose={setIsResultsOpen}>
-					<TransitionChild
-						as="div"
-						enter="ease-out duration-300"
-						enterFrom="opacity-0"
-						enterTo="opacity-100"
-						leave="ease-in duration-200"
-						leaveFrom="opacity-100"
-						leaveTo="opacity-0"
-					>
-						<div
-							className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"
-							aria-hidden="true"
-						/>
-					</TransitionChild>
+			<Modal
+				isOpen={isResultsOpen}
+				onClose={() => setIsResultsOpen(false)}
+				title="Flow Results"
+				icon={<DocumentTextIcon className="h-6 w-6" />}
+			>
+				<div className="max-h-[60vh] overflow-y-auto">
+					{nodes.map((node) => {
+						const result = executionResults.get(node.id);
+						const hasError = result?.error || result?.text?.startsWith('Error:');
 
-					<div className="fixed inset-0 z-10 overflow-y-auto">
-						<div className="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
-							<TransitionChild
-								as="div"
-								enter="ease-out duration-300"
-								enterFrom="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-								enterTo="opacity-100 translate-y-0 sm:scale-100"
-								leave="ease-in duration-200"
-								leaveFrom="opacity-100 translate-y-0 sm:scale-100"
-								leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-							>
-								<DialogPanel className="w-full max-w-lg transform overflow-hidden rounded-lg bg-white p-6 text-left align-middle shadow-xl transition-all">
-									<DialogTitle
-										as="h3"
-										className="text-lg font-medium leading-6 text-gray-900 mb-4"
-									>
-										Flow Results
-									</DialogTitle>
-									<div className="mt-2 max-h-[60vh] overflow-y-auto">
-										{nodes.map((node) => {
-											const result = executionResults.get(node.id);
-											const hasError =
-												result?.error || result?.text?.startsWith('Error:');
+						return (
+							<div key={node.id} className="mb-6">
+								<div className="font-medium text-sm text-gray-500 flex justify-between items-center mb-2">
+									<span>Node: {node.data.type}</span>
+									{hasError && (
+										<span className="text-red-500 text-xs">Failed</span>
+									)}
+								</div>
 
-											return (
-												<div key={node.id} className="mb-4">
-													<div className="font-medium text-sm text-gray-500 flex justify-between items-center">
-														<span>Node: {node.data.type}</span>
-														{hasError && (
-															<span className="text-red-500">
-																Failed
-															</span>
-														)}
-													</div>
+								<div
+									className={`p-4 rounded-lg border ${
+										hasError
+											? 'bg-red-50 border-red-200 text-red-700'
+											: 'bg-gray-50 border-gray-200 text-gray-900'
+									}`}
+								>
+									<pre className="text-sm whitespace-pre-wrap font-mono">
+										{result?.text || 'No result'}
+									</pre>
+								</div>
 
-													<div
-														className={`mt-1 p-3 rounded-md ${
-															hasError
-																? 'bg-red-50 text-red-700'
-																: 'bg-gray-50 text-gray-900'
-														}`}
-													>
-														<pre className="text-sm whitespace-pre-wrap">
-															{result?.text || 'No result'}
-														</pre>
-													</div>
-
-													{result?.usage && !hasError && (
-														<div className="mt-2 text-xs text-gray-500">
-															<span className="font-medium">
-																Node Tokens:{' '}
-															</span>
-															{formatTokenCount(
-																result.usage.totalTokens
-															)}
-														</div>
-													)}
-												</div>
-											);
-										})}
-
-										{/* Overall Usage Stats */}
-										{totalUsage && (
-											<TokenUsageDisplay usage={totalUsage} model="" />
-										)}
+								{result?.usage && !hasError && (
+									<div className="mt-2 text-xs text-gray-500">
+										<span className="font-medium">Node Tokens: </span>
+										{formatTokenCount(result.usage.totalTokens)}
 									</div>
-									<div className="mt-5 sm:mt-6">
-										<button
-											type="button"
-											className="inline-flex w-full justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-											onClick={() => setIsResultsOpen(false)}
-										>
-											Close
-										</button>
-									</div>{' '}
-								</DialogPanel>
-							</TransitionChild>
-						</div>
-					</div>
-				</Dialog>
-			</Transition>
+								)}
+							</div>
+						);
+					})}
+
+					{/* Overall Usage Stats */}
+					{totalUsage && <TokenUsageDisplay usage={totalUsage} model="" />}
+				</div>
+
+				<ModalActions>
+					<PrimaryButton onClick={() => setIsResultsOpen(false)}>
+						Close
+					</PrimaryButton>
+				</ModalActions>
+			</Modal>
 
 			{/* Template Save Dialog */}
 			<SaveTemplateDialog
@@ -367,7 +324,7 @@ export default function FlowToolbar() {
 							leaveFrom="opacity-100 translate-y-0"
 							leaveTo="opacity-0 translate-y-4"
 						>
-							<DialogPanel className="w-full max-w-sm bg-white shadow-lg rounded-lg pointer-events-auto ring-1 ring-black/5 overflow-hidden">
+							<DialogPanel className="w-full sm:max-w-lg bg-white shadow-lg rounded-lg pointer-events-auto ring-1 ring-black/5 overflow-hidden">
 								<div className="p-4">
 									<div className="flex items-start">
 										<div className="flex-shrink-0">

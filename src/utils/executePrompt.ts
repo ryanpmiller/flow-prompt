@@ -138,8 +138,29 @@ export const executeFlow = async (
 				variables[`input${index + 1}`] = value;
 			});
 
-			// Replace template variables and execute the prompt
-			const processedContent = replaceTemplateVariables(node.data.content, variables);
+			// Smart input handling for transform nodes
+			let processedContent: string;
+
+			if (node.data.type === 'transform' && values.length > 0) {
+				// For transform nodes with input connections, automatically inject input
+				const inputContent = values[0]; // Primary input content
+
+				// Check if the user already has {{input}} in their content
+				const hasInputVariable = node.data.content.includes('{{input}}');
+
+				if (hasInputVariable) {
+					// User explicitly used {{input}}, so use normal variable replacement
+					processedContent = replaceTemplateVariables(node.data.content, variables);
+				} else {
+					// User didn't use {{input}}, so automatically inject input content
+					// Format: Input content first, then user's transformation instructions
+					const userInstructions = replaceTemplateVariables(node.data.content, variables);
+					processedContent = inputContent.trim() + '\n\n' + userInstructions;
+				}
+			} else {
+				// For input nodes or transform nodes without connections, use normal processing
+				processedContent = replaceTemplateVariables(node.data.content, variables);
+			}
 
 			const result = await callLLM({
 				content: processedContent,
@@ -186,8 +207,25 @@ export const executeNode = async (
 	const model = settings.model || DEFAULT_MODEL;
 	const maxOutputTokens = getMaxOutputTokens(model);
 
-	// Generate the final prompt content
-	const promptContent = input ? node.data.content.replace('{{input}}', input) : node.data.content;
+	// Smart input handling for transform nodes
+	let promptContent: string;
+
+	if (input && node.data.type === 'transform') {
+		// Check if the user already has {{input}} in their content
+		const hasInputVariable = node.data.content.includes('{{input}}');
+
+		if (hasInputVariable) {
+			// User explicitly used {{input}}, so replace it normally
+			promptContent = node.data.content.replace('{{input}}', input);
+		} else {
+			// User didn't use {{input}}, so automatically inject input content
+			// Format: Input content first, then user's transformation instructions
+			promptContent = input.trim() + '\n\n' + node.data.content;
+		}
+	} else {
+		// For input nodes or when no input provided, use content as-is
+		promptContent = node.data.content;
+	}
 
 	const result = await createCompletion({
 		prompt: promptContent,

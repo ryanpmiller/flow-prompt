@@ -41,7 +41,7 @@ export default function Footer() {
 						</h3>
 						<div className="mt-4 space-y-4">
 							<a
-								href="https://github.com/yourusername/flow-prompt"
+								href="https://github.com/ryanpmiller/flow-prompt"
 								className="text-base text-gray-500 hover:text-gray-900 block"
 							>
 								GitHub

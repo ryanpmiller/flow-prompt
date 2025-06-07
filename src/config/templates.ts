@@ -22,7 +22,7 @@ export const featuredTemplates = [
 			{
 				id: 'node2',
 				type: 'promptNode' as const,
-				position: { x: 250, y: 250 },
+				position: { x: 650, y: 550 },
 				data: {
 					type: 'transform' as const,
 					content:
@@ -66,7 +66,7 @@ export const featuredTemplates = [
 			{
 				id: 'node2',
 				type: 'promptNode' as const,
-				position: { x: 250, y: 250 },
+				position: { x: 550, y: 750 },
 				data: {
 					type: 'transform' as const,
 					content:

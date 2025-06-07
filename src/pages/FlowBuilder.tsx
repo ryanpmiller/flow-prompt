@@ -5,6 +5,7 @@ import ReactFlow, {
 	Controls,
 	Node as FlowNode,
 	NodeTypes,
+	EdgeTypes,
 	OnSelectionChangeParams,
 	Panel,
 	ReactFlowInstance,
@@ -12,8 +13,14 @@ import ReactFlow, {
 } from 'reactflow';
 import 'reactflow/dist/style.css';
 
+import {
+	SparklesIcon,
+	ArrowRightIcon,
+} from '@heroicons/react/24/outline';
+
 import FlowToolbar from '../components/FlowToolbar';
 import PromptNodeComponent from '../components/PromptNode';
+import CustomEdge from '../components/CustomEdge';
 import { DEFAULT_MODEL } from '../config/models';
 import { useFlowStore } from '../store/flowStore';
 import { useTemplateStore } from '../store/templateStore';
@@ -22,29 +29,45 @@ const nodeTypes: NodeTypes = {
 	promptNode: PromptNodeComponent,
 };
 
+const edgeTypes: EdgeTypes = {
+	default: CustomEdge,
+};
+
 const PROMPT_TEMPLATES = [
+	{
+		name: 'Input',
+		type: 'input',
+		template: '',
+		category: 'Generic',
+	},
+	{
+		name: 'Transform',
+		type: 'transform',
+		template: '',
+		category: 'Generic',
+	},
 	{
 		name: 'Content Summarizer',
 		type: 'transform',
-		template: 'Summarize the following text in bullet points:\n\n{{input}}',
+		template: 'Summarize the following text in bullet points',
 		category: 'Basic',
 	},
 	{
 		name: 'Tone Changer',
 		type: 'transform',
-		template: 'Rewrite the following text in a {{tone}} tone:\n\n{{input}}',
+		template: 'Rewrite the following text in a {{tone}} tone',
 		category: 'Basic',
 	},
 	{
 		name: 'Tweet Generator',
 		type: 'transform',
-		template: 'Convert this content into 3 engaging tweets:\n\n{{input}}',
+		template: 'Convert this content into 3 engaging tweets',
 		category: 'Social Media',
 	},
 	{
 		name: 'LinkedIn Post',
 		type: 'transform',
-		template: 'Transform this content into a professional LinkedIn post:\n\n{{input}}',
+		template: 'Transform this content into a professional LinkedIn post',
 		category: 'Social Media',
 	},
 	{
@@ -72,7 +95,7 @@ const PROMPT_TEMPLATES = [
 		name: 'Research Summary',
 		type: 'transform',
 		template:
-			'Analyze this research paper and provide key findings, methodology, and conclusions:\n\n{{input}}',
+			'Analyze this research paper and provide key findings, methodology, and conclusions',
 		category: 'Research',
 	},
 	{
@@ -103,6 +126,31 @@ const groupedTemplates = PROMPT_TEMPLATES.reduce(
 	{} as Record<string, typeof PROMPT_TEMPLATES>
 );
 
+// Get template visual configuration
+const getTemplateConfig = (template: typeof PROMPT_TEMPLATES[0]) => {
+	if (template.type === 'input') {
+		return {
+			icon: SparklesIcon,
+			bgColor: 'bg-emerald-50',
+			borderColor: 'border-emerald-200',
+			hoverBorderColor: 'hover:border-emerald-500',
+			hoverBgColor: 'hover:bg-emerald-100',
+			iconColor: 'text-emerald-600',
+			tagColor: 'bg-emerald-500 text-white',
+		};
+	} else {
+		return {
+			icon: ArrowRightIcon,
+			bgColor: 'bg-violet-50',
+			borderColor: 'border-violet-200',
+			hoverBorderColor: 'hover:border-violet-500',
+			hoverBgColor: 'hover:bg-violet-100',
+			iconColor: 'text-violet-600',
+			tagColor: 'bg-violet-500 text-white',
+		};
+	}
+};
+
 function Flow() {
 	const [searchParams] = useSearchParams();
 	const {
@@ -113,6 +161,7 @@ function Flow() {
 		onConnect,
 		onSelectionChange,
 		addNode,
+		setEdges,
 		resetFlow,
 	} = useFlowStore();
 	const { loadTemplate } = useTemplateStore();
@@ -131,11 +180,15 @@ function Flow() {
 					addNode({
 						...node,
 						position: node.position,
-					});
+					}, { skipCollisionDetection: true });
 				});
+				// Load template edges
+				if (template.edges && template.edges.length > 0) {
+					setEdges(template.edges);
+				}
 			}
 		}
-	}, [searchParams, loadTemplate, addNode, resetFlow]);
+	}, [searchParams, loadTemplate, addNode, setEdges, resetFlow]);
 
 	const handleSelectionChange = useCallback(
 		({ nodes: selectedNodes }: OnSelectionChangeParams) => {
@@ -166,13 +219,14 @@ function Flow() {
 			const template = JSON.parse(event.dataTransfer.getData('application/promptnode'));
 
 			// Calculate position relative to the viewport
-			const position = reactFlowInstance.project({
+			const dropPosition = reactFlowInstance.project({
 				x: event.clientX - reactFlowBounds.left,
 				y: event.clientY - reactFlowBounds.top,
 			});
 
+			// The addNode function will handle collision detection automatically
 			addNode({
-				position,
+				position: dropPosition,
 				data: {
 					type: template.type,
 					content: template.template,
@@ -202,23 +256,40 @@ function Flow() {
 						<div key={category} className="mb-6">
 							<h3 className="text-sm font-medium text-gray-500 mb-2">{category}</h3>
 							<div className="space-y-2">
-								{templates.map((template) => (
-									<div
-										key={template.name}
-										className="w-full p-3 text-left rounded border border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 cursor-move transition-colors"
-										draggable
-										onDragStart={(e) => onDragStart(e, template)}
-									>
-										<div className="font-medium text-gray-900">
-											{template.name}
+								{templates.map((template) => {
+									const config = getTemplateConfig(template);
+									const IconComponent = config.icon;
+
+									return (
+										<div
+											key={template.name}
+											className={`
+												w-full p-3 text-left rounded-lg border cursor-move transition-all duration-200
+												${config.bgColor} ${config.borderColor}
+												${config.hoverBorderColor} ${config.hoverBgColor}
+												hover:shadow-sm
+											`}
+											draggable
+											onDragStart={(e) => onDragStart(e, template)}
+										>
+											<div className="flex items-center gap-3">
+												<div className={`p-2 rounded-lg ${config.tagColor} shadow-sm`}>
+													<IconComponent className="w-4 h-4" />
+												</div>
+												<div className="flex-1">
+													<div className="font-medium text-gray-900">
+														{template.name}
+													</div>
+													<div className="text-sm text-gray-500 mt-1">
+														{template.type === 'input'
+															? 'Creates new content'
+															: 'Transforms input'}
+													</div>
+												</div>
+											</div>
 										</div>
-										<div className="text-sm text-gray-500 mt-1">
-											{template.type === 'input'
-												? 'Creates new content'
-												: 'Transforms input'}
-										</div>
-									</div>
-								))}
+									);
+								})}
 							</div>
 						</div>
 					))}
@@ -242,6 +313,7 @@ function Flow() {
 							onSelectionChange={handleSelectionChange}
 							onInit={onInit}
 							nodeTypes={nodeTypes}
+							edgeTypes={edgeTypes}
 							fitView
 							selectNodesOnDrag
 						>
