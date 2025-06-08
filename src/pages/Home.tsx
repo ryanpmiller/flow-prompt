@@ -2,33 +2,8 @@ import { Link } from 'react-router-dom';
 
 import { BriefcaseIcon, SparklesIcon, UserGroupIcon } from '@heroicons/react/24/solid';
 
-const featuredTemplates = [
-	{
-		id: 'resume-builder',
-		title: 'Resume Builder',
-		description: 'Create ATS-optimized resumes and cover letters',
-	},
-	{
-		id: 'cold-email',
-		title: 'Cold Email Generator',
-		description: 'Generate personalized outreach emails',
-	},
-	{
-		id: 'brand-name',
-		title: 'Brand Name Creator',
-		description: 'Generate creative brand names and messaging',
-	},
-	{
-		id: 'content-repurposer',
-		title: 'Content Repurposer',
-		description: 'Transform content for multiple platforms',
-	},
-	{
-		id: 'research-assistant',
-		title: 'Research Assistant',
-		description: 'Analyze and summarize research papers',
-	},
-];
+import CategoryPill from '../components/CategoryPill';
+import { featuredTemplates } from '../config/templates';
 
 const personas = [
 	{
@@ -145,21 +120,22 @@ export default function Home() {
 						{featuredTemplates.map((template) => (
 							<div
 								key={template.id}
-								className="relative rounded-lg border border-gray-200 bg-white px-6 py-5 shadow-sm flex items-center space-x-3 hover:border-gray-400"
+								className="relative rounded-lg border border-gray-200 bg-white px-6 py-5 shadow-sm hover:border-gray-400 transition-colors"
 							>
-								<div className="flex-1 min-w-0">
-									<Link
-										to={`/templates/${template.id}`}
-										className="focus:outline-none"
-									>
-										<p className="text-lg font-medium text-gray-900">
-											{template.title}
+								<Link
+									to={`/build?template=${template.id}`}
+									className="focus:outline-none"
+								>
+									<div className="flex-1 min-w-0">
+										<p className="text-lg font-medium text-gray-900 mb-2">
+											{template.name}
 										</p>
-										<p className="text-sm text-gray-500 truncate">
+										<p className="text-sm text-gray-500 mb-3">
 											{template.description}
 										</p>
-									</Link>
-								</div>
+										<CategoryPill category={template.category} />
+									</div>
+								</Link>
 							</div>
 						))}
 					</div>
