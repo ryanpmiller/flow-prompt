@@ -117,10 +117,7 @@ export default function NodeSettings({ isOpen, onClose }: NodeSettingsProps) {
 
 				<ModalActions>
 					<SecondaryButton onClick={onClose}>Cancel</SecondaryButton>
-					<PrimaryButton
-						onClick={handleSubmit}
-						icon={<CogIcon className="w-4 h-4" />}
-					>
+					<PrimaryButton onClick={handleSubmit} icon={<CogIcon className="w-4 h-4" />}>
 						Save Settings
 					</PrimaryButton>
 				</ModalActions>

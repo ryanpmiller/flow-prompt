@@ -1,6 +1,7 @@
 import { ReactNode, forwardRef } from 'react';
 
-import { ChevronDownIcon, ArrowPathIcon } from '@heroicons/react/24/outline';
+import { ArrowPathIcon, ChevronDownIcon } from '@heroicons/react/24/outline';
+
 export function FormField({
 	label,
 	children,
@@ -259,11 +260,13 @@ export function PrimaryButton({
 			disabled={disabled || loading}
 			className="inline-flex justify-center items-center px-4 py-2.5 border border-transparent text-sm font-medium rounded-lg text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm transition-colors"
 			{...props}
-		>		{loading ? (
-			<ArrowPathIcon className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" />
-		) : (
-			icon && <span className="w-4 h-4 mr-2">{icon}</span>
-		)}
+		>
+			{' '}
+			{loading ? (
+				<ArrowPathIcon className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" />
+			) : (
+				icon && <span className="w-4 h-4 mr-2">{icon}</span>
+			)}
 			{children}
 		</button>
 	);
