@@ -36,15 +36,6 @@ export default function Footer() {
 	return (
 		<footer className="bg-gray-50 border-t border-gray-200">
 			<div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
-				{/* Company tagline */}
-				<div className="text-center mb-12">
-					<h2 className="text-2xl font-bold text-gray-900 mb-2">PromptFlow</h2>
-					<p className="text-gray-600 max-w-2xl mx-auto">
-						Build powerful AI workflows with ease. Connect prompts, automate tasks, and
-						unlock the full potential of AI for your projects.
-					</p>
-				</div>
-
 				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
 					{/* Product */}
 					<div>
