@@ -12,17 +12,19 @@ if [ -n "$staged_files" ]; then
 
   if [ $format_check_result -ne 0 ]; then
     echo ""
-    echo "🚫 Commit aborted: Code formatting issues detected!"
+    echo "🔧 Formatting issues detected! Auto-formatting files..."
     echo ""
-    echo "Some files are not properly formatted. Please run:"
-    echo "  npm run format"
+    
+    # Format the staged files
+    echo "$staged_files" | xargs npx prettier --write
+    
+    # Re-stage the formatted files
+    echo "$staged_files" | xargs git add
+    
     echo ""
-    echo "Then stage and commit your changes again."
-    echo ""
-    echo "Files that need formatting:"
-    echo "$staged_files" | xargs npx prettier --check 2>&1 || true
-    exit 1
+    echo "✅ Files have been formatted and re-staged!"
+    echo "Proceeding with commit..."
+  else
+    echo "✅ Code formatting is correct!"
   fi
-
-  echo "✅ Code formatting is correct!"
 fi
