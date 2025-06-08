@@ -1,5 +1,7 @@
 import { Link } from 'react-router-dom';
 
+import { CheckIcon } from '@heroicons/react/24/outline';
+
 const plans = [
 	{
 		name: 'Free',
@@ -75,19 +77,7 @@ export default function Pricing() {
 							<ul className="mt-6 space-y-4">
 								{plan.features.map((feature) => (
 									<li key={feature} className="flex">
-										<svg
-											className="h-6 w-6 text-green-500"
-											fill="none"
-											viewBox="0 0 24 24"
-											stroke="currentColor"
-										>
-											<path
-												strokeLinecap="round"
-												strokeLinejoin="round"
-												strokeWidth={2}
-												d="M5 13l4 4L19 7"
-											/>
-										</svg>
+										<CheckIcon className="h-6 w-6 text-green-500" />
 										<span className="ml-3 text-base text-gray-500">
 											{feature}
 										</span>

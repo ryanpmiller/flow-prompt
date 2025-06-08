@@ -11,12 +11,13 @@ Prompt Flow Builder
 - Write clean, readable, and maintanable code.
 - Keep code DRY where possible.
 - Use `.prettierrc` file for proper formatting.
+- All icons should use standardized icon library and not svg elements.
 
 ## Package Guidelines
 
 - Do not use deprecated node packages. Attempt to use the latest most popular solution suited for the task.
 - Do not use deprecated React components. Instead find the latest requirements and use the most appropriate replacement.
-    - Never use `Transition.child`, `Dialog.panel`, `Dialog.title`.
+    - Never use `Transition.child`, `Dialog.panel`, `Dialog.title`. Instead use the camel cased versions of those components.
 
 ## Tech Stack Guidelines
 

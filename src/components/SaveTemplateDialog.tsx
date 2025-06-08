@@ -1,5 +1,7 @@
 import { useState } from 'react';
 
+import { BookmarkIcon } from '@heroicons/react/24/outline';
+
 import { useFlowStore } from '../store/flowStore';
 import { useTemplateStore } from '../store/templateStore';
 import {
@@ -76,21 +78,7 @@ export function SaveTemplateDialog({ isOpen, onClose }: { isOpen: boolean; onClo
 			onClose={onClose}
 			title="Save as Template"
 			description="Create a reusable template from your current flow"
-			icon={
-				<svg
-					className="w-4 h-4 text-white"
-					fill="none"
-					stroke="currentColor"
-					viewBox="0 0 24 24"
-				>
-					<path
-						strokeLinecap="round"
-						strokeLinejoin="round"
-						strokeWidth={2}
-						d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"
-					/>
-				</svg>
-			}
+			icon={<BookmarkIcon className="w-4 h-4 text-white" />}
 		>
 			<form onSubmit={handleSubmit} className="space-y-5">
 				<FormField label="Template Name" required>
@@ -160,21 +148,7 @@ export function SaveTemplateDialog({ isOpen, onClose }: { isOpen: boolean; onClo
 					<PrimaryButton
 						type="submit"
 						disabled={!nodes.length}
-						icon={
-							<svg
-								className="w-4 h-4"
-								fill="none"
-								stroke="currentColor"
-								viewBox="0 0 24 24"
-							>
-								<path
-									strokeLinecap="round"
-									strokeLinejoin="round"
-									strokeWidth={2}
-									d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"
-								/>
-							</svg>
-						}
+						icon={<BookmarkIcon className="w-4 h-4" />}
 					>
 						Save Template
 					</PrimaryButton>
