@@ -1,18 +1,15 @@
-#!/bin/sh
-. "$(dirname "$0")/_/husky.sh"
-
 # Get list of staged files that Prettier can format
 staged_files=$(git diff --cached --name-only --diff-filter=ACMR | grep -E '\.(js|jsx|ts|tsx|css|md|json)$' || true)
 
 if [ -n "$staged_files" ]; then
   echo "Checking code formatting..."
   echo "Staged files: $staged_files"
-  
+
   # Check if any staged files would be changed by Prettier
   # Use a temporary variable to capture the exit code
   format_check_result=0
   echo "$staged_files" | xargs npx prettier --check > /dev/null 2>&1 || format_check_result=$?
-  
+
   if [ $format_check_result -ne 0 ]; then
     echo ""
     echo "🚫 Commit aborted: Code formatting issues detected!"
@@ -26,6 +23,6 @@ if [ -n "$staged_files" ]; then
     echo "$staged_files" | xargs npx prettier --check 2>&1 || true
     exit 1
   fi
-  
+
   echo "✅ Code formatting is correct!"
 fi
