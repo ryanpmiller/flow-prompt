@@ -21,12 +21,22 @@ interface SaveTemplateFormData {
 }
 
 const DEFAULT_CATEGORIES = [
-	'Basic',
-	'Social Media',
-	'Sales',
 	'Career',
-	'Research',
+	'Business',
+	'Finance',
+	'Sales',
+	'Marketing',
 	'Branding',
+	'Content',
+	'Writing',
+	'Analysis',
+	'Research',
+	'Development',
+	'Support',
+	'Communication',
+	'Education',
+	'Creative',
+	'Design',
 	'Custom',
 ];
 
