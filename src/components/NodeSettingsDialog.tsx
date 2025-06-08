@@ -14,7 +14,7 @@ interface RequiredNodeSettings extends Omit<NodeSettingsType, 'model'> {
 	tone: string;
 }
 
-interface NodeSettingsProps {
+interface NodeSettingsDialogProps {
 	isOpen: boolean;
 	onClose: () => void;
 }
@@ -30,7 +30,7 @@ const TONE_OPTIONS = [
 	'Persuasive',
 ];
 
-export default function NodeSettings({ isOpen, onClose }: NodeSettingsProps) {
+export default function NodeSettingsDialog({ isOpen, onClose }: NodeSettingsDialogProps) {
 	const { globalSettings, updateGlobalSettings } = useFlowStore();
 
 	const [settings, setSettings] = useState<RequiredNodeSettings>({

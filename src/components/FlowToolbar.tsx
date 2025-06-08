@@ -17,7 +17,7 @@ import { NodeResult, executeFlow } from '../utils/executePrompt';
 import { formatTokenCount } from '../utils/tokenCounter';
 import { PrimaryButton } from './Form';
 import { Modal, ModalActions } from './Modal';
-import NodeSettings from './NodeSettings';
+import NodeSettingsDialog from './NodeSettingsDialog';
 import { SaveTemplateDialog } from './SaveTemplateDialog';
 
 interface TokenUsageDisplayProps {
@@ -295,7 +295,7 @@ export default function FlowToolbar() {
 			/>
 
 			{/* Settings Modal */}
-			<NodeSettings isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} />
+			<NodeSettingsDialog isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} />
 
 			{/* Error Modal */}
 			<Transition appear show={!!error} as={Fragment}>
