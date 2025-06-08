@@ -33,6 +33,22 @@ export default defineConfig({
 					Origin: 'http://localhost:5174',
 				},
 			},
+			// Add real-time data source proxies
+			'/api/weather': {
+				target: 'https://api.openweathermap.org/data/2.5',
+				changeOrigin: true,
+				rewrite: (path) => path.replace(/^\/api\/weather/, ''),
+			},
+			'/api/news': {
+				target: 'https://newsapi.org/v2',
+				changeOrigin: true,
+				rewrite: (path) => path.replace(/^\/api\/news/, ''),
+			},
+			'/api/stocks': {
+				target: 'https://api.polygon.io/v2',
+				changeOrigin: true,
+				rewrite: (path) => path.replace(/^\/api\/stocks/, ''),
+			},
 		},
 	},
 	build: {

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import ReactFlow, {
 	Background,
@@ -21,6 +21,7 @@ import PromptNodeComponent from '../components/PromptNode';
 import { DEFAULT_MODEL } from '../config/models';
 import { useFlowStore } from '../store/flowStore';
 import { useTemplateStore } from '../store/templateStore';
+import { extractPromptNodesFromFeaturedTemplates } from '../utils/extractPromptNodes';
 
 const nodeTypes: NodeTypes = {
 	promptNode: PromptNodeComponent,
@@ -30,101 +31,75 @@ const edgeTypes: EdgeTypes = {
 	default: CustomEdge,
 };
 
-const PROMPT_TEMPLATES = [
+// Basic templates that are always available
+const BASIC_TEMPLATES = [
 	{
 		name: 'Input',
-		type: 'input',
+		type: 'input' as const,
 		template: '',
 		category: 'Generic',
 	},
 	{
 		name: 'Transform',
-		type: 'transform',
+		type: 'transform' as const,
 		template: '',
 		category: 'Generic',
 	},
 	{
 		name: 'Content Summarizer',
-		type: 'transform',
+		type: 'transform' as const,
 		template: 'Summarize the following text in bullet points',
 		category: 'Basic',
 	},
 	{
 		name: 'Tone Changer',
-		type: 'transform',
+		type: 'transform' as const,
 		template: 'Rewrite the following text in a {{tone}} tone',
 		category: 'Basic',
 	},
-	{
-		name: 'Tweet Generator',
-		type: 'transform',
-		template: 'Convert this content into 3 engaging tweets',
-		category: 'Social Media',
-	},
-	{
-		name: 'LinkedIn Post',
-		type: 'transform',
-		template: 'Transform this content into a professional LinkedIn post',
-		category: 'Social Media',
-	},
-	{
-		name: 'Cold Email',
-		type: 'input',
-		template:
-			'Write a persuasive cold email for {{industry}} industry:\n\nProduct: {{product}}\nTarget: {{target}}\nValue Prop: {{value}}\n\nMake it concise and engaging.',
-		category: 'Sales',
-	},
-	{
-		name: 'ATS Resume Matcher',
-		type: 'transform',
-		template:
-			'Analyze this resume against the job description and suggest improvements:\n\nJob Description:\n{{jobDescription}}\n\nResume:\n{{resume}}',
-		category: 'Career',
-	},
-	{
-		name: 'Cover Letter',
-		type: 'transform',
-		template:
-			'Write a tailored cover letter based on this job description and resume:\n\nJob Description:\n{{jobDescription}}\n\nResume:\n{{resume}}',
-		category: 'Career',
-	},
-	{
-		name: 'Research Summary',
-		type: 'transform',
-		template:
-			'Analyze this research paper and provide key findings, methodology, and conclusions',
-		category: 'Research',
-	},
-	{
-		name: 'Brand Name Generator',
-		type: 'input',
-		template:
-			'Generate 5 creative brand name ideas for:\n\nIndustry: {{industry}}\nKey Values: {{values}}\nTarget Audience: {{audience}}',
-		category: 'Branding',
-	},
-	{
-		name: 'Mission Statement',
-		type: 'transform',
-		template:
-			'Create a compelling mission statement based on:\n\nCompany: {{company}}\nPurpose: {{purpose}}\nValues: {{values}}',
-		category: 'Branding',
-	},
 ];
 
-// Group templates by category
-const groupedTemplates = PROMPT_TEMPLATES.reduce(
-	(acc, template) => {
-		if (!acc[template.category]) {
-			acc[template.category] = [];
+// Function to get all available prompt templates
+function getAllPromptTemplates() {
+	const extractedNodes = extractPromptNodesFromFeaturedTemplates();
+
+	// Remove duplicates based on template content, preferring featured template versions
+	const uniqueTemplates = new Map();
+
+	// First add extracted nodes (they get priority)
+	extractedNodes.forEach((template) => {
+		const key = `${template.type}-${template.template.substring(0, 50)}`;
+		uniqueTemplates.set(key, template);
+	});
+
+	// Then add basic templates only if they don't conflict
+	BASIC_TEMPLATES.forEach((template) => {
+		const key = `${template.type}-${template.template.substring(0, 50)}`;
+		if (!uniqueTemplates.has(key)) {
+			uniqueTemplates.set(key, template);
 		}
-		acc[template.category].push(template);
-		return acc;
-	},
-	{} as Record<string, typeof PROMPT_TEMPLATES>
-);
+	});
+
+	return Array.from(uniqueTemplates.values());
+}
+
+// Group templates by category
+function getGroupedTemplates() {
+	const allTemplates = getAllPromptTemplates();
+	return allTemplates.reduce(
+		(acc, template) => {
+			if (!acc[template.category]) {
+				acc[template.category] = [];
+			}
+			acc[template.category].push(template);
+			return acc;
+		},
+		{} as Record<string, ReturnType<typeof getAllPromptTemplates>>
+	);
+}
 
 // Get template visual configuration
-const getTemplateConfig = (template: (typeof PROMPT_TEMPLATES)[0]) => {
+const getTemplateConfig = (template: ReturnType<typeof getAllPromptTemplates>[0]) => {
 	if (template.type === 'input') {
 		return {
 			icon: SparklesIcon,
@@ -166,6 +141,9 @@ function Flow() {
 	const reactFlowWrapper = useRef<HTMLDivElement>(null);
 	const [reactFlowInstance, setReactFlowInstance] = useState<ReactFlowInstance | null>(null);
 
+	// Get dynamic templates
+	const groupedTemplates = useMemo(() => getGroupedTemplates(), []);
+
 	// Load template from URL parameter
 	useEffect(() => {
 		const templateId = searchParams.get('template');
@@ -206,7 +184,7 @@ function Flow() {
 	}, []);
 
 	const onDragStart = useCallback(
-		(event: React.DragEvent, nodeTemplate: (typeof PROMPT_TEMPLATES)[0]) => {
+		(event: React.DragEvent, nodeTemplate: ReturnType<typeof getAllPromptTemplates>[0]) => {
 			event.dataTransfer.setData('application/promptnode', JSON.stringify(nodeTemplate));
 			event.dataTransfer.effectAllowed = 'move';
 		},
@@ -261,42 +239,44 @@ function Flow() {
 						<div key={category} className="mb-6">
 							<h3 className="text-sm font-medium text-gray-500 mb-2">{category}</h3>
 							<div className="space-y-2">
-								{templates.map((template) => {
-									const config = getTemplateConfig(template);
-									const IconComponent = config.icon;
+								{(templates as ReturnType<typeof getAllPromptTemplates>).map(
+									(template) => {
+										const config = getTemplateConfig(template);
+										const IconComponent = config.icon;
 
-									return (
-										<div
-											key={template.name}
-											className={`
+										return (
+											<div
+												key={template.name}
+												className={`
 												w-full p-3 text-left rounded-lg border cursor-move transition-all duration-200
 												${config.bgColor} ${config.borderColor}
 												${config.hoverBorderColor} ${config.hoverBgColor}
 												hover:shadow-sm
 											`}
-											draggable
-											onDragStart={(e) => onDragStart(e, template)}
-										>
-											<div className="flex items-center gap-3">
-												<div
-													className={`p-2 rounded-lg ${config.tagColor} shadow-sm`}
-												>
-													<IconComponent className="w-4 h-4" />
-												</div>
-												<div className="flex-1">
-													<div className="font-medium text-gray-900">
-														{template.name}
+												draggable
+												onDragStart={(e) => onDragStart(e, template)}
+											>
+												<div className="flex items-center gap-3">
+													<div
+														className={`p-2 rounded-lg ${config.tagColor} shadow-sm`}
+													>
+														<IconComponent className="w-4 h-4" />
 													</div>
-													<div className="text-sm text-gray-500 mt-1">
-														{template.type === 'input'
-															? 'Creates new content'
-															: 'Transforms input'}
+													<div className="flex-1">
+														<div className="font-medium text-gray-900">
+															{template.name}
+														</div>
+														<div className="text-sm text-gray-500 mt-1">
+															{template.type === 'input'
+																? 'Creates new content'
+																: 'Transforms input'}
+														</div>
 													</div>
 												</div>
 											</div>
-										</div>
-									);
-								})}
+										);
+									}
+								)}
 							</div>
 						</div>
 					))}
