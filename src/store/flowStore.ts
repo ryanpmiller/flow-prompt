@@ -28,6 +28,7 @@ export interface PromptNode extends Node {
 		content: string;
 		settings?: NodeSettings;
 		formData?: Record<string, string>; // For input nodes form field values
+		title?: string; // Custom title for the node (e.g., template name)
 	};
 }
 
@@ -43,6 +44,7 @@ interface FlowState {
 	addNode: (node: Partial<PromptNode>, options?: { skipCollisionDetection?: boolean }) => void;
 	setEdges: (edges: Edge[]) => void;
 	updateNodeContent: (nodeId: string, content: string) => void;
+	updateNodeTitle: (nodeId: string, title: string) => void;
 	updateNodeFormData: (nodeId: string, formData: Record<string, string>) => void;
 	getPopulatedContent: (nodeId: string) => string;
 	updateGlobalSettings: (settings: NodeSettings) => void;
@@ -196,6 +198,22 @@ export const useFlowStore = create<FlowState>((set, get) => ({
 		set({
 			nodes: get().nodes.map((node) =>
 				node.id === nodeId ? { ...node, data: { ...node.data, content } } : node
+			),
+		});
+
+		// Save to localStorage
+		const flow = {
+			nodes: get().nodes,
+			edges: get().edges,
+			globalSettings: get().globalSettings,
+			updatedAt: new Date().toISOString(),
+		};
+		localStorage.setItem('savedFlow', JSON.stringify(flow));
+	},
+	updateNodeTitle: (nodeId: string, title: string) => {
+		set({
+			nodes: get().nodes.map((node) =>
+				node.id === nodeId ? { ...node, data: { ...node.data, title } } : node
 			),
 		});
 

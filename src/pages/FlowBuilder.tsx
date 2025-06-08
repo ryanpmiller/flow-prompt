@@ -178,6 +178,10 @@ function Flow() {
 						{
 							...node,
 							position: node.position,
+							data: {
+								...node.data,
+								title: template.name, // Set the template name as the node title
+							},
 						},
 						{ skipCollisionDetection: true }
 					);
@@ -230,6 +234,7 @@ function Flow() {
 				data: {
 					type: template.type,
 					content: template.template,
+					title: template.name, // Set the template name as the node title
 					settings: {
 						temperature: 0.7,
 						model: DEFAULT_MODEL,

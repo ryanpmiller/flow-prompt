@@ -6,7 +6,6 @@ import {
 	ArrowRightIcon,
 	ArrowsPointingInIcon,
 	ArrowsPointingOutIcon,
-	DocumentTextIcon,
 	LightBulbIcon,
 	SparklesIcon,
 	TrashIcon,
@@ -176,7 +175,7 @@ const PromptNodeComponent = ({ data, id, isConnectable }: NodeProps<PromptNode['
 	const getNodeConfig = () => {
 		if (data.type === 'input') {
 			return {
-				title: 'Input',
+				title: data.title || 'Input',
 				subtitle: 'Creates new content',
 				icon: SparklesIcon,
 				borderColor: 'border-emerald-300',
@@ -197,7 +196,7 @@ const PromptNodeComponent = ({ data, id, isConnectable }: NodeProps<PromptNode['
 				: '\n\nExample\n"Rewrite the content to be more professional and concise"';
 
 			return {
-				title: 'Transform',
+				title: data.title || 'Transform',
 				subtitle: isConnected ? 'Processing connected input' : 'Processes incoming content',
 				icon: ArrowRightIcon,
 				borderColor: 'border-violet-300',
@@ -618,62 +617,34 @@ const PromptNodeComponent = ({ data, id, isConnectable }: NodeProps<PromptNode['
 										const templateFields = parseTemplateForForm(data.content);
 										return !templateFields || templateFields.length === 0;
 									})() && (
-										<div className="relative">
-											<FormTextarea
-												ref={textareaRef}
-												value={data.content}
-												onChange={handleContentChange}
-												onKeyDown={handleKeyDown}
-												onFocus={() => setIsFocused(true)}
-												onBlur={() => setIsFocused(false)}
-												placeholder={config.placeholder}
-												rows={4}
-												className="font-mono placeholder:text-gray-400 placeholder:font-sans"
-												spellCheck={false}
-											/>
-
-											{/* Empty state helper */}
-											{data.content.length === 0 && !isFocused && (
-												<div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-													<div className="text-center text-gray-400">
-														<DocumentTextIcon className="w-8 h-8 mx-auto mb-2 opacity-50" />
-														<p className="text-xs">
-															Click to start writing your prompt
-														</p>
-													</div>
-												</div>
-											)}
-										</div>
+										<FormTextarea
+											ref={textareaRef}
+											value={data.content}
+											onChange={handleContentChange}
+											onKeyDown={handleKeyDown}
+											onFocus={() => setIsFocused(true)}
+											onBlur={() => setIsFocused(false)}
+											placeholder={config.placeholder}
+											rows={4}
+											className="font-mono placeholder:text-gray-400 placeholder:font-sans"
+											spellCheck={false}
+										/>
 									)}
 								</div>
 							) : (
 								/* Traditional textarea for transform nodes */
-								<div className="relative">
-									<FormTextarea
-										ref={textareaRef}
-										value={getDisplayContent()}
-										onChange={handleContentChange}
-										onKeyDown={handleKeyDown}
-										onFocus={() => setIsFocused(true)}
-										onBlur={() => setIsFocused(false)}
-										placeholder={config.placeholder}
-										rows={isMaximized ? 12 : 4}
-										className="font-mono placeholder:text-gray-400 placeholder:font-sans"
-										spellCheck={false}
-									/>
-
-									{/* Empty state helper */}
-									{getDisplayContent().length === 0 && !isFocused && (
-										<div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-											<div className="text-center text-gray-400">
-												<DocumentTextIcon className="w-8 h-8 mx-auto mb-2 opacity-50" />
-												<p className="text-xs">
-													Click to start writing your prompt
-												</p>
-											</div>
-										</div>
-									)}
-								</div>
+								<FormTextarea
+									ref={textareaRef}
+									value={getDisplayContent()}
+									onChange={handleContentChange}
+									onKeyDown={handleKeyDown}
+									onFocus={() => setIsFocused(true)}
+									onBlur={() => setIsFocused(false)}
+									placeholder={config.placeholder}
+									rows={isMaximized ? 12 : 4}
+									className="font-mono placeholder:text-gray-400 placeholder:font-sans"
+									spellCheck={false}
+								/>
 							)}
 
 							{/* Input connection status for transform nodes */}

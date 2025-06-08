@@ -1,7 +1,18 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
-import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
+import {
+	ArrowRightIcon,
+	Bars3Icon,
+	BoltIcon,
+	CurrencyDollarIcon,
+	DocumentTextIcon,
+	FlagIcon,
+	RocketLaunchIcon,
+	SparklesIcon,
+	WrenchScrewdriverIcon,
+	XMarkIcon,
+} from '@heroicons/react/24/outline';
 
 export default function Navigation() {
 	const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -48,9 +59,9 @@ export default function Navigation() {
 	}, [mobileMenuOpen]);
 
 	const menuItems = [
-		{ name: 'Templates', href: '/templates', icon: '📋' },
-		{ name: 'Build', href: '/build', icon: '🔧' },
-		{ name: 'Pricing', href: '/pricing', icon: '💎' },
+		{ name: 'Templates', href: '/templates', icon: DocumentTextIcon },
+		{ name: 'Build', href: '/build', icon: WrenchScrewdriverIcon },
+		{ name: 'Pricing', href: '/pricing', icon: CurrencyDollarIcon },
 	];
 
 	return (
@@ -83,19 +94,7 @@ export default function Navigation() {
 						<button className="relative inline-flex items-center px-6 py-2.5 border border-transparent text-sm font-semibold rounded-xl shadow-sm text-white bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all duration-300 hover:shadow-lg hover:scale-105 active:scale-95 overflow-hidden group">
 							<span className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent scale-x-0 group-hover:scale-x-100 transition-transform duration-500 ease-out"></span>
 							<span className="relative">Get Started Free</span>
-							<svg
-								className="relative ml-2 h-4 w-4 transition-transform duration-300 group-hover:translate-x-1"
-								fill="none"
-								viewBox="0 0 24 24"
-								strokeWidth="2"
-								stroke="currentColor"
-							>
-								<path
-									strokeLinecap="round"
-									strokeLinejoin="round"
-									d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"
-								/>
-							</svg>
+							<ArrowRightIcon className="relative ml-2 h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
 						</button>
 					</div>
 
@@ -194,8 +193,8 @@ export default function Navigation() {
 											<div className="absolute inset-0 bg-gradient-to-r from-indigo-600/10 to-purple-600/10 scale-x-0 group-hover:scale-x-100 transition-transform duration-500 ease-out origin-left rounded-2xl"></div>
 
 											{/* Icon */}
-											<span className="text-2xl mr-4 transform transition-transform duration-300 group-hover:scale-110 group-hover:rotate-12">
-												{item.icon}
+											<span className="mr-4 transform transition-transform duration-300 group-hover:scale-110 group-hover:rotate-12">
+												<item.icon className="w-6 h-6 text-gray-600 group-hover:text-indigo-600" />
 											</span>
 
 											{/* Content */}
@@ -213,19 +212,7 @@ export default function Navigation() {
 											</div>
 
 											{/* Chevron */}
-											<svg
-												className="h-5 w-5 text-gray-600 group-hover:text-indigo-600 transition-all duration-300 group-hover:translate-x-1"
-												fill="none"
-												viewBox="0 0 24 24"
-												strokeWidth="2.5"
-												stroke="currentColor"
-											>
-												<path
-													strokeLinecap="round"
-													strokeLinejoin="round"
-													d="M8.25 4.5l7.5 7.5-7.5 7.5"
-												/>
-											</svg>
+											<ArrowRightIcon className="h-5 w-5 text-gray-600 group-hover:text-indigo-600 transition-all duration-300 group-hover:translate-x-1" />
 										</div>
 									</Link>
 								))}
@@ -240,7 +227,9 @@ export default function Navigation() {
 									<div className="w-full border-t border-gray-300"></div>
 								</div>
 								<div className="relative flex justify-center">
-									<span className="px-4 bg-white text-lg">✨</span>
+									<span className="px-4 bg-white text-lg">
+										<SparklesIcon className="h-6 w-6 text-gray-600" />
+									</span>
 								</div>
 							</div>
 
@@ -257,34 +246,26 @@ export default function Navigation() {
 									<div className="absolute inset-0 rounded-3xl animate-pulse bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
 
 									<span className="relative flex items-center">
-										<span className="mr-3">🚀</span>
+										<RocketLaunchIcon className="mr-3 h-5 w-5" />
 										Get Started Free
-										<svg
-											className="ml-3 h-5 w-5 transition-transform duration-300 group-hover:translate-x-1 group-hover:scale-110"
-											fill="none"
-											viewBox="0 0 24 24"
-											strokeWidth="2.5"
-											stroke="currentColor"
-										>
-											<path
-												strokeLinecap="round"
-												strokeLinejoin="round"
-												d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"
-											/>
-										</svg>
+										<ArrowRightIcon className="ml-3 h-5 w-5 transition-transform duration-300 group-hover:translate-x-1 group-hover:scale-110" />
 									</span>
 								</button>
 
 								{/* Enhanced feature highlights */}
 								<div className="grid grid-cols-2 gap-4 text-center">
 									<div className="p-3 rounded-xl bg-gradient-to-br from-green-50 to-emerald-50 border border-green-100">
-										<div className="text-2xl mb-1">⚡</div>
+										<div className="flex justify-center mb-1">
+											<BoltIcon className="h-6 w-6 text-green-600" />
+										</div>
 										<div className="text-xs font-semibold text-green-700">
 											Instant Setup
 										</div>
 									</div>
 									<div className="p-3 rounded-xl bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-100">
-										<div className="text-2xl mb-1">🎯</div>
+										<div className="flex justify-center mb-1">
+											<FlagIcon className="h-6 w-6 text-blue-600" />
+										</div>
 										<div className="text-xs font-semibold text-blue-700">
 											No Credit Card
 										</div>

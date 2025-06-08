@@ -26,7 +26,7 @@ export const featuredTemplates = [
 				data: {
 					type: 'transform' as const,
 					content:
-						'Analyze this resume against the job description and suggest improvements:\n\n{{input}}',
+						'Analyze this resume against the job description and suggest improvements\n\n{{input}}',
 					settings: {
 						temperature: 0.7,
 						model: DEFAULT_MODEL,
@@ -70,7 +70,7 @@ export const featuredTemplates = [
 				data: {
 					type: 'transform' as const,
 					content:
-						'Write a persuasive cold email using the product and target information:\n\n{{input}}',
+						'Write a persuasive cold email using the product and target information\n\n{{input}}',
 					settings: {
 						temperature: 0.7,
 						model: DEFAULT_MODEL,
