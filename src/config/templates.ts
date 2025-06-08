@@ -111,4 +111,50 @@ export const featuredTemplates = [
 		edges: [],
 		category: 'Branding',
 	},
+	{
+		id: 'content-writer',
+		name: 'Blog Content Writer',
+		description: 'Generate engaging blog posts and articles',
+		nodes: [
+			{
+				id: 'node1',
+				type: 'promptNode' as const,
+				position: { x: 250, y: 100 },
+				data: {
+					type: 'input' as const,
+					content:
+						'Topic: {{topic}}\nTarget Audience: {{audience}}\nTone: {{tone}}\nWord Count: {{wordCount}}',
+					settings: {
+						temperature: 0.8,
+						model: DEFAULT_MODEL,
+					},
+				},
+			},
+		],
+		edges: [],
+		category: 'Content',
+	},
+	{
+		id: 'data-analyst',
+		name: 'Data Analysis Helper',
+		description: 'Analyze datasets and generate insights',
+		nodes: [
+			{
+				id: 'node1',
+				type: 'promptNode' as const,
+				position: { x: 250, y: 100 },
+				data: {
+					type: 'input' as const,
+					content:
+						'Dataset: {{dataset}}\nQuestions: {{questions}}\nAnalysis Type: {{analysisType}}',
+					settings: {
+						temperature: 0.3,
+						model: DEFAULT_MODEL,
+					},
+				},
+			},
+		],
+		edges: [],
+		category: 'Analysis',
+	},
 ];
