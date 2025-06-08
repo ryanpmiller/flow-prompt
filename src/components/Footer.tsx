@@ -3,10 +3,49 @@ import { Link } from 'react-router-dom';
 export default function Footer() {
 	const currentYear = new Date().getFullYear();
 
+	// Social sharing functions
+	const shareOnTwitter = () => {
+		const text = 'Check out PromptFlow - Create powerful AI prompt workflows with ease! 🚀';
+		const url = 'https://promptflow.com';
+		const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`;
+		window.open(twitterUrl, '_blank', 'noopener,noreferrer');
+	};
+
+	const shareOnLinkedIn = () => {
+		const url = 'https://promptflow.com';
+		const title = 'PromptFlow - AI Prompt Workflow Builder';
+		const summary =
+			"Create powerful AI prompt workflows with ease using PromptFlow's intuitive builder.";
+		const linkedInUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}&title=${encodeURIComponent(title)}&summary=${encodeURIComponent(summary)}`;
+		window.open(linkedInUrl, '_blank', 'noopener,noreferrer');
+	};
+
+	const shareOnFacebook = () => {
+		const url = 'https://promptflow.com';
+		const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`;
+		window.open(facebookUrl, '_blank', 'noopener,noreferrer');
+	};
+
+	const shareOnReddit = () => {
+		const url = 'https://promptflow.com';
+		const title = 'PromptFlow - AI Prompt Workflow Builder';
+		const redditUrl = `https://reddit.com/submit?url=${encodeURIComponent(url)}&title=${encodeURIComponent(title)}`;
+		window.open(redditUrl, '_blank', 'noopener,noreferrer');
+	};
+
 	return (
 		<footer className="bg-gray-50 border-t border-gray-200">
 			<div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
-				<div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+				{/* Company tagline */}
+				<div className="text-center mb-12">
+					<h2 className="text-2xl font-bold text-gray-900 mb-2">PromptFlow</h2>
+					<p className="text-gray-600 max-w-2xl mx-auto">
+						Build powerful AI workflows with ease. Connect prompts, automate tasks, and
+						unlock the full potential of AI for your projects.
+					</p>
+				</div>
+
+				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
 					{/* Product */}
 					<div>
 						<h3 className="text-sm font-semibold text-gray-600 tracking-wider uppercase">
@@ -31,6 +70,12 @@ export default function Footer() {
 							>
 								Pricing
 							</Link>
+							<a
+								href="#"
+								className="text-base text-gray-500 hover:text-gray-900 block"
+							>
+								Features
+							</a>
 						</div>
 					</div>
 
@@ -40,9 +85,17 @@ export default function Footer() {
 							Resources
 						</h3>
 						<div className="mt-4 space-y-4">
+							<Link
+								to="/faq"
+								className="text-base text-gray-500 hover:text-gray-900 block"
+							>
+								FAQ
+							</Link>
 							<a
 								href="https://github.com/ryanpmiller/flow-prompt"
 								className="text-base text-gray-500 hover:text-gray-900 block"
+								target="_blank"
+								rel="noopener noreferrer"
 							>
 								GitHub
 							</a>
@@ -56,7 +109,52 @@ export default function Footer() {
 								href="#"
 								className="text-base text-gray-500 hover:text-gray-900 block"
 							>
+								Tutorials
+							</a>
+							<a
+								href="#"
+								className="text-base text-gray-500 hover:text-gray-900 block"
+							>
 								API Reference
+							</a>
+						</div>
+					</div>
+
+					{/* Company */}
+					<div>
+						<h3 className="text-sm font-semibold text-gray-600 tracking-wider uppercase">
+							Company
+						</h3>
+						<div className="mt-4 space-y-4">
+							<a
+								href="#"
+								className="text-base text-gray-500 hover:text-gray-900 block"
+							>
+								About Us
+							</a>
+							<a
+								href="#"
+								className="text-base text-gray-500 hover:text-gray-900 block"
+							>
+								Blog
+							</a>
+							<a
+								href="#"
+								className="text-base text-gray-500 hover:text-gray-900 block"
+							>
+								Contact
+							</a>
+							<a
+								href="#"
+								className="text-base text-gray-500 hover:text-gray-900 block"
+							>
+								Careers
+							</a>
+							<a
+								href="#"
+								className="text-base text-gray-500 hover:text-gray-900 block"
+							>
+								Status
 							</a>
 						</div>
 					</div>
@@ -79,40 +177,62 @@ export default function Footer() {
 							>
 								Terms
 							</Link>
-						</div>
-					</div>
-
-					{/* Social */}
-					<div>
-						<h3 className="text-sm font-semibold text-gray-600 tracking-wider uppercase">
-							Connect
-						</h3>
-						<div className="mt-4 space-y-4">
 							<a
-								href="https://twitter.com"
+								href="#"
 								className="text-base text-gray-500 hover:text-gray-900 block"
 							>
-								Twitter
+								Security
 							</a>
 							<a
-								href="https://linkedin.com"
+								href="#"
 								className="text-base text-gray-500 hover:text-gray-900 block"
 							>
-								LinkedIn
+								Cookies
 							</a>
 						</div>
 					</div>
 				</div>
 
+				{/* Newsletter Signup */}
+				<div className="mt-12 pt-8 border-t border-gray-200">
+					<div className="max-w-md mx-auto text-center">
+						<h3 className="text-lg font-semibold text-gray-900 mb-2">Stay Updated</h3>
+						<p className="text-gray-600 mb-4">
+							Get the latest updates, tips, and new templates delivered to your inbox.
+						</p>
+						<div className="flex flex-col sm:flex-row gap-3">
+							<input
+								type="email"
+								placeholder="Enter your email"
+								className="flex-1 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+							/>
+							<button className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors">
+								Subscribe
+							</button>
+						</div>
+						<p className="text-xs text-gray-500 mt-2">
+							No spam. Unsubscribe at any time.
+						</p>
+					</div>
+				</div>
+
 				<div className="mt-8 border-t border-gray-200 pt-8 md:flex md:items-center md:justify-between">
 					<div className="flex space-x-6 md:order-2">
-						<a href="#" className="text-gray-400 hover:text-gray-500">
-							<span className="sr-only">Twitter</span>
+						<button
+							onClick={shareOnTwitter}
+							className="text-gray-400 hover:text-gray-500"
+						>
+							<span className="sr-only">Share on Twitter</span>
 							<svg className="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
 								<path d="M8.29 20.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0022 5.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.072 4.072 0 012.8 9.713v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 012 18.407a11.616 11.616 0 006.29 1.84" />
 							</svg>
-						</a>
-						<a href="#" className="text-gray-400 hover:text-gray-500">
+						</button>
+						<a
+							href="https://github.com/ryanpmiller/flow-prompt"
+							className="text-gray-400 hover:text-gray-500"
+							target="_blank"
+							rel="noopener noreferrer"
+						>
 							<span className="sr-only">GitHub</span>
 							<svg className="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
 								<path
@@ -122,8 +242,11 @@ export default function Footer() {
 								/>
 							</svg>
 						</a>
-						<a href="#" className="text-gray-400 hover:text-gray-500">
-							<span className="sr-only">LinkedIn</span>
+						<button
+							onClick={shareOnLinkedIn}
+							className="text-gray-400 hover:text-gray-500"
+						>
+							<span className="sr-only">Share on LinkedIn</span>
 							<svg className="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
 								<path
 									fillRule="evenodd"
@@ -131,7 +254,25 @@ export default function Footer() {
 									clipRule="evenodd"
 								/>
 							</svg>
-						</a>
+						</button>
+						<button
+							onClick={shareOnFacebook}
+							className="text-gray-400 hover:text-gray-500"
+						>
+							<span className="sr-only">Share on Facebook</span>
+							<svg className="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
+								<path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+							</svg>
+						</button>
+						<button
+							onClick={shareOnReddit}
+							className="text-gray-400 hover:text-gray-500"
+						>
+							<span className="sr-only">Share on Reddit</span>
+							<svg className="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
+								<path d="M12 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0zm5.01 4.744c.688 0 1.25.561 1.25 1.249a1.25 1.25 0 0 1-2.498.056l-2.597-.547-.8 3.747c1.824.07 3.48.632 4.674 1.488.308-.309.73-.491 1.207-.491.968 0 1.754.786 1.754 1.754 0 .716-.435 1.333-1.01 1.614a3.111 3.111 0 0 1 .042.52c0 2.694-3.13 4.87-7.004 4.87-3.874 0-7.004-2.176-7.004-4.87 0-.183.015-.366.043-.534A1.748 1.748 0 0 1 4.028 12c0-.968.786-1.754 1.754-1.754.463 0 .898.196 1.207.49 1.207-.883 2.878-1.43 4.744-1.487l.885-4.182a.342.342 0 0 1 .14-.197.35.35 0 0 1 .238-.042l2.906.617a1.214 1.214 0 0 1 1.108-.701zM9.25 12C8.561 12 8 12.562 8 13.25c0 .687.561 1.248 1.25 1.248.687 0 1.248-.561 1.248-1.249 0-.688-.561-1.249-1.249-1.249zm5.5 0c-.687 0-1.248.561-1.248 1.25 0 .687.561 1.248 1.249 1.248.688 0 1.249-.561 1.249-1.249 0-.687-.562-1.249-1.25-1.249zm-5.466 3.99a.327.327 0 0 0-.231.094.33.33 0 0 0 0 .463c.842.842 2.484.913 2.961.913.477 0 2.105-.056 2.961-.913a.361.361 0 0 0 .029-.463.33.33 0 0 0-.464 0c-.547.533-1.684.73-2.512.73-.828 0-1.979-.196-2.512-.73a.326.326 0 0 0-.232-.095z" />
+							</svg>
+						</button>
 					</div>
 					<p className="mt-8 text-base text-gray-400 md:mt-0 md:order-1">
 						&copy; {currentYear} PromptFlow. All rights reserved.
