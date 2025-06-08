@@ -14,13 +14,13 @@ if [ -n "$staged_files" ]; then
     echo ""
     echo "🔧 Formatting issues detected! Auto-formatting files..."
     echo ""
-    
+
     # Format the staged files
     echo "$staged_files" | xargs npx prettier --write
-    
+
     # Re-stage the formatted files
     echo "$staged_files" | xargs git add
-    
+
     echo ""
     echo "✅ Files have been formatted and re-staged!"
     echo "Proceeding with commit..."
